@@ -1,5 +1,6 @@
 from src.helper_functions import round_robin_opponent
 import numpy as np
+import pandas as pd
 
 def run_draft(agents
               , n_rounds):
@@ -19,16 +20,20 @@ def run_draft(agents
     player_assignments = {}
     
     for i in range(n_rounds):
-        for j in range(len(agents)):
-            
-            agent = agents[j]
-            chosen_player = agent.make_pick(player_assignments)
-            player_assignments[chosen_player] = j
-            
-        for j in reversed(range(len(agents))):
-            agent = agents[j]
-            chosen_player = agent.make_pick(player_assignments)
-            player_assignments[chosen_player] = j
+        
+        if i % 2 ==0:
+            for j in range(len(agents)):
+
+                agent = agents[j]
+                chosen_player = agent.make_pick(player_assignments)
+                player_assignments[chosen_player] = j
+        
+        else:
+           
+            for j in reversed(range(len(agents))):
+                agent = agents[j]
+                chosen_player = agent.make_pick(player_assignments)
+                player_assignments[chosen_player] = j
 
     return player_assignments
 
@@ -37,7 +42,8 @@ def run_multiple_seasons(teams
                          , categories
                          , n_seasons = 100 
                          , n_weeks = 25
-                         , winner_take_all = True):
+                         , winner_take_all = True
+                         , return_detailed_results = False ):
     """Simulate multiple seasons with the same drafters 
     
     Weekly performances are sampled from a dataframe of real season performance
@@ -51,10 +57,11 @@ def run_multiple_seasons(teams
         n_weeks: number of weeks per season
         winner_take_all: If True, the winner of a majority of categories in a week gets a point.
                          If false, each player gets a point for each category won 
+        return_cat_results: If True, return detailed results on category wins 
         
     Returns:
         Series of winning percentages with the structure
-         team_number : winning_percent  
+         team_number : winning_fraction  
     """
     #create a version of the essential info dataframe which incorporate team information for this season
     season_df = season_df.reset_index().drop(columns = 'week')
@@ -83,15 +90,18 @@ def run_multiple_seasons(teams
     opposing_team_schedule = [(s,round_robin_opponent(t,w),w) for s, t, w in team_performances.index]
     opposing_team_performances = team_performances.loc[opposing_team_schedule]
 
-    cat_wins = np.greater(team_performances.values,opposing_team_performances.values).sum(axis = 1)
-    cat_ties = np.equal(team_performances.values,opposing_team_performances.values).sum(axis = 1)
+    cat_wins = np.greater(team_performances.values,opposing_team_performances.values)
+    cat_ties = np.equal(team_performances.values,opposing_team_performances.values)
+    
+    tot_cat_wins = cat_wins.sum(axis = 1)
+    tot_cat_ties = cat_ties.sum(axis = 1)
     
     if winner_take_all:
-        team_performances.loc[:,'tie'] = cat_wins + cat_ties/2 == len(categories)/2
-        team_performances.loc[:,'win'] = cat_wins + cat_ties/2 > len(categories)/2
+        team_performances.loc[:,'tie'] = tot_cat_wins + tot_cat_ties/2 == len(categories)/2
+        team_performances.loc[:,'win'] = tot_cat_wins + tot_cat_ties/2 > len(categories)/2
     else:
-        team_performances.loc[:,'tie'] = cat_ties
-        team_performances.loc[:,'win'] = cat_wins
+        team_performances.loc[:,'tie'] = tot_cat_ties
+        team_performances.loc[:,'win'] = tot_cat_wins
         
     team_results = team_performances.groupby(['team','season']).agg({'win' : sum, 'tie' : sum})
 
@@ -108,8 +118,22 @@ def run_multiple_seasons(teams
     season_counts = winners_after_ties.groupby('season')['winner_points'].transform('count')
     winners_after_ties.loc[:,'winner_points_adjusted'] = 1/season_counts
     
-    return winners_after_ties.groupby('team')['winner_points_adjusted'].sum()
+    wins_by_teams = winners_after_ties.groupby('team')['winner_points_adjusted'].sum()/winners_after_ties['winner_points_adjusted'].sum()
     
+    if not return_detailed_results:
+        return wins_by_teams
+    else:
+        cat_win_df = pd.DataFrame(cat_wins, columns = categories, index = team_performances.index)
+        cat_tie_df = pd.DataFrame(cat_ties, columns = categories, index = team_performances.index)
+        
+        cat_wins_agg = cat_win_df.groupby('team').mean()
+        cat_wins_agg = pd.concat({'win' : cat_wins_agg}, names = ['result'])
+        
+        cat_ties_agg = cat_tie_df.groupby('team').mean()
+        cat_ties_agg = pd.concat({'tie' : cat_ties_agg}, names = ['result'])
 
+        results_agg = pd.concat([cat_wins_agg, cat_ties_agg])
+        return wins_by_teams, results_agg.reorder_levels(['team','result'])
+                              
     
    
