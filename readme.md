@@ -20,25 +20,7 @@ For use in fantasy basketball, a few modifications are made to basic Z-scores
 
 After modifications, we have a sensible strategy for scoring players. See below for an animation of what weekly blocking numbers look like after the Z-score transformation
 
-
-
-
-```python
-#hide
-
-from IPython.display import Video
-
-Video("visualizations/BlockVis.mp4", height = 550, width = 900)
-```
-
-
-
-
-<video src="visualizations/BlockVis.mp4" controls  width="900"  height="550">
-      Your browser does not support the <code>video</code> element.
-    </video>
-
-
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/b0af1525-d2ed-4149-a14a-274c262df643
 
 ## 2. Justifying Z-scores
 
@@ -53,23 +35,7 @@ Distributions per player can be transformed into category differentials under th
 
 Fortunately, all of the categories will look similar in aggregate because of one of the most amazing theorems in mathematics, the central limit theorem. The central limit theorem says that when adding a bunch of random numbers together, their average (or sum) ends up looking a lot like a bell curve, even if the sampled distribution was not a bell curve. To demonstrate, see the below animation on the differential between two teams’ numbers of blocks, where one team has twelve players and the other has eleven
 
-
-```python
-#hide
-
-from IPython.display import Video
-
-Video("visualizations/SimulationVis.mp4", height = 550, width = 900)
-```
-
-
-
-
-<video src="visualizations/SimulationVis.mp4" controls  width="900"  height="550">
-      Your browser does not support the <code>video</code> element.
-    </video>
-
-
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/9a07ba69-d284-491a-bfe4-57deec31c12a
 
 The blocking data didn’t look like a bell curve at all, but the difference in blocks across full teams does. This will apply to all categories. 
 
@@ -120,23 +86,7 @@ Or do they?
 
 Astute readers may have noticed a problematic assumption underlying the proof presented in the last section. All performance values were known from the get-go, which is not the case in practice. This increases variance by the average variability of the statistic week-to-week. E.g. for blocks
 
-
-```python
-#hide
-
-from IPython.display import Video
-
-Video("visualizations/NewVariabilityVis.mp4", height = 550, width = 900)
-```
-
-
-
-
-<video src="visualizations/NewVariabilityVis.mp4" controls  width="900"  height="550">
-      Your browser does not support the <code>video</code> element.
-    </video>
-
-
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/228d8185-7e61-43df-bb81-ec91e355ee36
 
 To see why this is a problem consider a hypothetical category for which all players average between -1 and 1, but actual values differ from -1,000 to +1,000 from week to week. It is intuitively obvious that this category would be not important to draft for. You could draft a bunch of +1 average players, but no matter how many you got, the result of the category would still be essentially a coin flip.     
 
@@ -170,24 +120,7 @@ The code in this repository performs this simulation with the following paramete
 - Actual weekly performances were sampled for each player for each week
 - Strategies were tested 10,000 times at each seat
 
-
-
-```python
-#hide
-
-from IPython.display import Video
-
-Video("visualizations/SImResultsVis.mp4", height = 550, width = 900)
-```
-
-
-
-
-<video src="visualizations/SImResultsVis.mp4" controls  width="900"  height="550">
-      Your browser does not support the <code>video</code> element.
-    </video>
-
-
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/3e2b2acf-562f-4152-8d41-88bd57798bf1
 
 G-score performed way better than Z-score in the simulation!
 
