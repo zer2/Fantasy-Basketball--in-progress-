@@ -6,7 +6,7 @@ One would expect that such a widely used metric has a strong theoretical foundat
 
 I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
-I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully this readme will provide a more readable explanation.
+I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully this readme will provide a more readable explanation
 
 ## 1.	What are Z-scores?
 
@@ -34,12 +34,11 @@ $$
 \frac{\frac{a_p}{a_\mu} \left(r_p - r_\mu \right)}{r_\sigma}
 $$
 
-The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list.    
+The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list
 
 ## 2. Justifying Z-scores
 
-As I said before, I think Z-scores are suboptimal. But there is a sense in which they do make sense, and before getting into their flaws, it is helpful to understand the positive case for them.  
-
+As I said before, I think Z-scores are suboptimal. But there is a sense in which they do make sense, and before getting into their flaws, it is helpful to understand the positive case for them  
 
 ### A.	Category differentials
 
@@ -51,7 +50,7 @@ Fortunately, all of the categories will look similar in aggregate because of one
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/9a07ba69-d284-491a-bfe4-57deec31c12a
 
-The blocking data didn’t look like a bell curve at all, but the difference in blocks across full teams does. This will apply to all categories. 
+The blocking data didn’t look like a bell curve at all, but the difference in blocks across full teams does. This will apply to all categories
 
 ### B.	Writing a formula for the category differential
 
@@ -59,13 +58,13 @@ Bell curves are defined by two numbers, mean and variance (standard deviation sq
 
 It is easy to find the mean and variance of the category differentials thanks to a nice property that both numbers share. They are additive across multiple variables; that is to say, the mean of a sum is the sum of the means and the variance of a sum is the sum of the variances (technically this isn’t always true because of correlations, but we don’t need to get into that). Note that when subtracting a number its mean is subtracted instead of added.
 
-Let’s return to the example where one team has eleven players and the other has twelve. The average differential is team two’s average score minus team one’s average score, which is just $m_\mu$ ($1.78$). Variances are additive so total variance is $23 * m_\sigma^2$, or standard deviation is $\sqrt{23 * m_\sigma^2}$ ($6.80$). This lines up with empirically calculated values from the simulation run above ($1.44$ and $6.66$). 
+Let’s return to the example where one team has eleven players and the other has twelve. The average differential is team two’s average score minus team one’s average score, which is just $m_\mu$ ($1.78$). Variances are additive so total variance is $23 * m_\sigma^2$, or standard deviation is $\sqrt{23 * m_\sigma^2}$ ($6.80$). This lines up with empirically calculated values from the simulation run above ($1.44$ and $6.66$)
 
 ### C.	Adding a new player
 
 Our theoretical scenario has unbalanced teams for a reason. One last player needs to be picked, and we can see how winning chances are affected by that choice.  
 
-Let’s say that the unchosen player has a blocking average of $m_p$. The mean of the differential goes down by $m_p$, and nothing happens to the variance, since the player’s score is known. Therefore the normal approximation of the differential has mean $m_\mu - m_p$ and variance $23 * m_\sigma^2$. 
+Let’s say that the unchosen player has a blocking average of $m_p$. The mean of the differential goes down by $m_p$, and nothing happens to the variance, since the player’s score is known. Therefore the normal approximation of the differential has mean $m_\mu - m_p$ and variance $23 * m_\sigma^2$
 
 ### D.	Calculating probability of victory
 
@@ -125,7 +124,7 @@ $$
 \frac{\frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{\sqrt{r_\sigma^2 + r_\tau^2}} 
 $$
 
-I call these G-scores.
+I call these G-scores
 
 ## 5.	Simulation results
 
@@ -145,4 +144,4 @@ G-score performed way better than Z-score in the simulation!
 
 When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. 
 
-Also, ranking systems are inherently suboptimal because they cannot adapt to the circumstances of the draft. In the paper, I outline a methodology for dynamically choosing players which performs better. It's just the tip of the iceburg though; I believe much more sophisticated algorithms could be developed to push performance even further. 
+Also, ranking systems are inherently suboptimal because they cannot adapt to the circumstances of the draft. In the paper, I outline a methodology for dynamically choosing players which performs better. It's just the tip of the iceburg though; I believe much more sophisticated algorithms could be developed to push performance even further
