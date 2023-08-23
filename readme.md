@@ -93,7 +93,7 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_c \right]
 $$
 
-We can see that the expected number of victories is directly proportional to the sum of Z-scores. So if a drafter wants to optimize for that they ought to choose the player with the highest Z-score; a compelling case for the Z-score ranking system! 
+We can see that the expected number of victories is directly proportional to the sum of Z-scores. For the 'Each category' and 'Rotisserie' formats, this is generally what you are trying to optimize for; a compelling case for using the Z-score ranking system! 'Most categories' is more complicated, but you can still use Z-scores as a heuristic
     
 ## 3.The flaw of Z-scores
 
