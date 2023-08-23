@@ -48,7 +48,7 @@ Distributions per player can be transformed into category differentials under th
 
 Fortunately, all of the categories will look similar in aggregate because of one of the most amazing theorems in mathematics, the central limit theorem. The central limit theorem says that when adding a bunch of random numbers together, their average (or sum) ends up looking a lot like a bell curve, even if the sampled distribution was not a bell curve. To demonstrate, see the below animation on the differential between two teams’ numbers of blocks. One team has twelve players and the other has eleven, with one player still to be chosen. 
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/9a07ba69-d284-491a-bfe4-57deec31c12a
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/f20be45a-3600-4630-a224-3b07ce40a0dd
 
 The blocking data didn’t look like a bell curve at all, but the difference in blocks across full teams does. This will apply to all categories
 
