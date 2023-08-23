@@ -93,11 +93,13 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_c \right]
 $$
 
-We can see that the expected number of victories is directly proportional to the sum of Z-scores. For the 'Each category' and 'Rotisserie' formats, this is generally what you are trying to optimize for; a compelling case for using the Z-score ranking system! 'Most categories' is more complicated, but you can still use Z-scores as a heuristic
+We can see that the expected number of category victories is directly proportional to the sum of Z-scores. For the 'Each category' and 'Rotisserie' formats, this is generally what drafters are trying to optimize for, so there is a compelling case to use Z-scores for those formats. The 'Most Categories' format is more complicated, but it still seems reasonable to use Z-score as a heuristic for it. 
+
+So what's the problem?
     
 ## 3.The flaw of Z-scores
 
-Alas, it is not so simple.
+As elegant as Z-scores are, they are not perfect. 
 
 Astute readers may have noticed a problematic assumption underlying the proof presented in the last section. All performance values were known from the get-go, which is not the case in practice. Even if long-term means are known, performances can vary significantly from one week to the next. 
 
