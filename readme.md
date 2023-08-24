@@ -10,13 +10,13 @@ I realize that the explanation included in the paper is not particularly readabl
 
 ## 1.	What are Z-scores?
 
-Z-scores are a real concept in statistics. They are what happens to a distribution after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. So if a set of numbers has an average of $10$ and a standard deviation of $5$, $Z(20) = \frac{20-10}{5} = 2$
+Z-scores are a real concept in statistics. They are what happens to a set of numbers after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. So if a set of numbers has an average of $10$ and a standard deviation of $5$, $Z(20) = \frac{20-10}{5} = 2$
 
 This transformation is useful for number crunchers, because it takes a set of numbers that could have any scale and remakes them into a new set with $\mu = 0$ and $\sigma =1$. Intuitively, this could be helpful in the fantasy basketball context, because all categories should be equally important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
 -	Z-scores should not be calculated using statistics from all NBA players, because most NBA players will never sniff fantasy teams and should be irrelevant. One common fix is to first score players by basic Z-score, then use the top players to re-calculate means and standard deviations. Players are then re-ranked with the updated means and standard deviations
--	Another fix is needed for free throw percent and field goal percent. Players who shoot more attempts matter more for these categories, so impact is scaled by number of attempts before the Z-score transformation
+-	Another fix is needed for free throw percent and field goal percent. Players who shoot more attempts matter more for these categories, so percentages are scaled by number of attempts vs. the average before the Z-score transformation
 
 I define $m_p$ as player $p$'s average, with $m_\mu$ and $m_\sigma$ as $\mu$ and $\sigma$ over the set of high-performing players. Z-scores for standard categories are then 
 
@@ -26,7 +26,7 @@ $$
 
 See below for an animation of what weekly blocking numbers look like after the Z-score transformation
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/b0af1525-d2ed-4149-a14a-274c262df643
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/f20be45a-3600-4630-a224-3b07ce40a0dd
 
 And for the percentage categories, with $a$ signifying attempts and $r$ signifying success rate,
 
@@ -38,49 +38,49 @@ The aggregate Z-score is the sum of Z-scores across all categories. Ordering all
 
 ## 2. Justifying Z-scores
 
-As I said before, I think Z-scores are suboptimal. But there is a sense in which they do make sense, and before getting into their flaws, it is helpful to understand the positive case for them  
+As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
 
-### A.	Category differentials
+Bear with me, the case for them involves laying some theoretical groundwork first 
 
-An important quantity of interest is the difference in category score, e.g. blocks, between two teams. The sign of the difference will determine the winner. 
+### A.	Category differences
 
-Distributions per player can be transformed into category differentials under the assumption that players are chosen randomly. One might expect this to be complicated because all the distributions look a little different from each other. Blocks for example have an unusual “long tail,” with many of the league’s blocks come from a small number of elite shot-blockers. One might be concerned that the total blocking numbers for a team may look different than say, the number of points. 
+An important quantity of interest is the difference in category score between two teams. The sign of the difference will determine the winner. 
 
-Fortunately, all of the categories will look similar in aggregate because of one of the most amazing theorems in mathematics, the central limit theorem. The central limit theorem says that when adding a bunch of random numbers together, their average (or sum) ends up looking a lot like a bell curve, even if the sampled distribution was not a bell curve. To demonstrate, see the below animation on the differential between two teams’ numbers of blocks. One team has twelve players and the other has eleven, with one player still to be chosen. 
+Distributions per player can be transformed into category differences under the assumption that players are chosen randomly. One might expect this to be complicated because all the distributions look a little different from each other. Blocks for example have an unusual “long tail,” with many of the league’s blocks come from a small number of elite shot-blockers. One might be concerned that the total blocking numbers for a team may look different than say, the number of points. 
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/f20be45a-3600-4630-a224-3b07ce40a0dd
+Fortunately, all of the categories will look similar in aggregate because of one of the most amazing theorems in mathematics, the central limit theorem. The central limit theorem says that when adding a bunch of random numbers together, their average (or sum) ends up looking a lot like a Bell curve, even if the sampled distribution was not a Bell curve. To demonstrate, see the below animation on the difference between two teams’ numbers of blocks. One team has eleven players and the other has twelve, ignoring the unchosen player for the time being 
 
-The blocking data didn’t look like a bell curve at all, but the difference in blocks across full teams does. This will apply to all categories
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
-### B.	Writing a formula for the category differential
+The blocking data doesn't look like a Bell curve at all, but the difference in blocks across full teams does
 
-Bell curves are defined by two numbers, mean and variance (standard deviation squared). In other words, all you need to know about a bell curve is its mean and variance, and then you can calculate everything else about it. 
+### B.	Properties of the category difference
 
-It is easy to find the mean and variance of the category differentials thanks to a nice property that both numbers share. They are additive across multiple variables; that is to say, the mean of a sum is the sum of the means and the variance of a sum is the sum of the variances (technically this isn’t always true because of correlations, but we don’t need to get into that). Note that when subtracting a number its mean is subtracted instead of added.
+It is helpful to calculate the mean and standard deviation of the Bell curve from the example above, where one team has eleven players and another has twelve, with one player yet to be picked. 
 
-Let’s return to the example where one team has eleven players and the other has twelve. The average differential is team two’s average score minus team one’s average score, which is just $m_\mu$ ($1.78$). Variances are additive so total variance is $23 * m_\sigma^2$, or standard deviation is $\sqrt{23 * m_\sigma^2}$ ($6.80$). This lines up with empirically calculated values from the simulation run above ($1.44$ and $6.66$)
+When adding numbers together, the sum of individual means becomes the overall mean. When some of those numbers are subtracted instead, their means are subtracted from the total mean rather than added. That makes the overall mean of the difference $12 * m_\mu - 11 * m_\mu = m_\mu$.
 
-### C.	Adding a new player
+In this case, the standard deviation of the sum is the square root of the sum of the individual standard deviations (be careful- this isn't always true when correlations are involved). Therefore the standard deviation of the difference is $\sqrt{23 * m_\sigma^2}$
 
-Our theoretical scenario has unbalanced teams for a reason. One last player needs to be picked, and we can see how winning chances are affected by that choice.  
+### C.	Adding the unchosen player
 
-Let’s say that the unchosen player has a blocking average of $m_p$. The mean of the differential goes down by $m_p$, and nothing happens to the variance, since the player’s score is known. Therefore the normal approximation of the differential has mean $m_\mu - m_p$ and variance $23 * m_\sigma^2$
+The unchosen player has a category average of $m_p$. Incorporating them, the mean of the difference goes down by $m_p$, and nothing happens to the standard deviation, since the player’s score is known. Therefore the final difference has mean $m_\mu - m_p$ and standard deviation $\sqrt{23 * m_\sigma^2}$
 
 ### D.	Calculating probability of victory
 
 Mathematically, this is the trickiest part. 
 
-We have a probability distribution for the difference in score between team two and team one. We already know that whenever the value is below zero, team one will win. So we need to know what percent of the distribution is below zero.
+We have a probability distribution for the difference in score between team two and team one. We already know that whenever the value is below zero, team one will win. So if we can calculate the probability that the distribution is below zero, we will know team one's chance of winning the category.
 
 In general, when we want to know what the probability is that a random number will be less than or equal to a particular value, we use a formula called a cumulative distribution function. $CDF(x) =$ the probability that a particular distribution will be less than $x$. We can use $CDF(0)$, then, to calculate what we want. 
 
-The $CDF$ of the normal distribution is well known. The details of how to apply it to this case are somewhat complicated, but we can cut to the chase and give an approximate formula for the standard statistics
+The $CDF$ of the Bell curve is well known. The details of how to apply it to this case are somewhat complicated, but we can cut to the chase and give an approximate formula for the standard statistics
 
 $$
 \frac{1}{2}\left[ 1 + \frac{2}{\sqrt{23 \pi}}* \frac{m_p – m_\mu}{m_\sigma} \right]
 $$
 
-The math of why it works is even more complicated, but the percentage statics can be treated the same way. Chance of winning is
+And for the percentage statistics 
 
 $$
 \frac{1}{2} \left[ 1 + \frac{2}{\sqrt{23 \pi}} * \frac{ \frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{r_\sigma}\right]
@@ -92,43 +92,41 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_c \right]
 $$
 
-We can see that the expected number of category victories is directly proportional to the sum of Z-scores. For the 'Each category' and 'Rotisserie' formats, this is generally what drafters are trying to optimize for, so there is a compelling case to use Z-scores for those formats. The 'Most Categories' format is more complicated, but it still seems reasonable to use Z-score as a heuristic for it. 
+We can see that the expected number of category victories is directly proportional to the sum of Z-scores. For the 'Each category' and 'Rotisserie' formats, this is generally what drafters are trying to optimize for, so there is a compelling case to use Z-scores for those formats. Might as well use them as a heuristic for 'Most Categories' too.
 
-So what's the problem?
+What's my problem with Z-scores then?
     
 ## 3.The flaw of Z-scores
 
-As elegant as Z-scores are, they are not perfect. 
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in real fantasy- even if long-term averages are well-known, performances can vary significantly from one week to the next. In addition to randomly choosing other players, we also should have randomly chosen how they would perform for the week.
 
-Astute readers may have noticed a problematic assumption underlying the proof presented in the last section. All performance values were known from the get-go, which is not the case in practice. Even if long-term means are known, performances can vary significantly from one week to the next. 
+This does not change $\mu$ but it does change $\sigma$ because it adds another source of variance. Mathematically, typical week-to-week variance must be added to the existing player-to-player variance. 
 
-To see why this is a problem consider a hypothetical category for which all players average between -1 and 1, but actual values differ from -1,000 to +1,000 from week to week. It is intuitively obvious that this category would be not important to draft for. You could draft a bunch of +1 average players, but no matter how many you got, the result of the category would still be essentially a coin flip.     
-
-Real basketball statistics can be kind of like this too. Steals, for instance, are notoriously volatile, and have much more week-to-week variance than player-to-player variance. Even if you draft well for steals, you have a good chance of losing the category often due to bad luck. 
-
-Fixing this requires modifying variance to account for week-to-week changes. Mathematically, typical week-to-week variance is added to the existing player-to-player variance. See below what this looks like for blocks
+See below what this looks like for blocks
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ff8961db-d1ad-4851-8bda-bdf6b030fe97
 
+Note that the new standard deviation is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as described in section 2B 
+
 ## 4.	Reformulating Z-scores 
 
-The key mistake was that we sampled player means to get the distributions for team totals. Instead of player means, we should have sampled player performances. Updating variance to be for player performances instead of means yields a new formula
+All the same arguments we made before still work, except that we need to replace the standard deviation values. This changes standard Z-scores to 
 
 $$
 \frac{m_p – m_\mu}{\sqrt{m_\sigma^2 + m_\tau^2}} 
 $$
 
-Or, for the percentage statistics, 
+And, for the percentage statistics, 
 
 $$
 \frac{\frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{\sqrt{r_\sigma^2 + r_\tau^2}} 
 $$
 
-I call these G-scores
+I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week variance, and get weighted much less in G-scores than Z-scores
 
 ## 5.	Simulation results
 
-This analysis would suggest that G-scores are more appropriate as a one-stop shop ranking system. But we’re using some crucial assumptions- in particular, we are assuming that other drafters are picking players randomly, which is definitely not true even if they are using a ranking system. It would be interesting to see how G-scores did against Z-scores in a real competition, where the assumptions do not necessarily hold true.
+The argument for G-scores makes many assumptions, including that other drafters are picking players randomly, which is definitely not completely true even if they are using a ranking system. It would be interesting to see how G-scores did against Z-scores in a real competition, where the assumptions do not necessarily hold true.
 
 The code in this repository performs this simulation with the following parameters 
 
