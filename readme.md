@@ -16,7 +16,7 @@ This transformation is useful for number crunchers, because it takes a set of nu
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
 -	Z-scores should not be calculated using statistics from all NBA players, because most NBA players will never sniff fantasy teams and should be irrelevant. One common fix is to first score players by basic Z-score, then use the top players to re-calculate means and standard deviations. Players are then re-ranked with the updated means and standard deviations
--	Another fix is needed for free throw percent and field goal percent. Players who shoot more attempts matter more for these categories, so percentages are scaled by number of attempts vs. the average before the Z-score transformation
+-	Another fix is needed for free throw percent and field goal percent. If a team has one player who goes $9$ for $9$ and another who goes $0$ for $1$ the aggregate aervage is $90\%$, closer to $100\%$ than $0\%$. Clearly players who shoot more attempts matter more for these categories, so percentages are scaled by number of attempts vs. the average before the Z-score transformation
 
 I define $m_p$ as player $p$'s average, with $m_\mu$ and $m_\sigma$ as $\mu$ and $\sigma$ over the set of high-performing players. Z-scores for standard categories are then 
 
