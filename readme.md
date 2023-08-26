@@ -37,7 +37,7 @@ $$
 
 See below for an animation of what weekly blocking numbers look like after the Z-score transformation
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/f20be45a-3600-4630-a224-3b07ce40a0dd
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/c2510de6-cff3-4ba8-b181-d806eeb8eaa7
 
 The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list
 
