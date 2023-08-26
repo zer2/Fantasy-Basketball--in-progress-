@@ -140,7 +140,7 @@ The results are, in my opinion, very interesting
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/3e2b2acf-562f-4152-8d41-88bd57798bf1
 
-G-scores perform way better than Z-scores in the simulation! This is great evidence that our logic made sense, and the G-score modification really is appropriate. 
+G-scores perform way better than Z-scores in the simulation! This is evidence that the logic above makes sense, and the G-score modification really is appropriate. 
 
 When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. 
 
