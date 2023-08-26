@@ -6,7 +6,7 @@ One would expect that such a widely used metric has a strong theoretical foundat
 
 I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
-I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully this readme will provide a more readable explanation
+I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow
 
 ## 1.	What are Z-scores?
 
@@ -16,7 +16,7 @@ This transformation is useful for number crunchers, because it takes a set of nu
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
 -	Z-scores should not be calculated using statistics from all NBA players, because most NBA players will never sniff fantasy teams and should be irrelevant. One common fix is to first score players by basic Z-score, then use the top players to re-calculate means and standard deviations. Players are then re-ranked with the updated means and standard deviations
--	Another fix is needed for free throw percent and field goal percent. If a team has one player who goes $9$ for $9$ and another who goes $0$ for $1$ the aggregate aervage is $90\%$, closer to $100\%$ than $0\%$. Clearly players who shoot more attempts matter more for these categories, so percentages are scaled by number of attempts vs. the average before the Z-score transformation
+-	Another fix is needed for free throw percent and field goal percent. If a team has one player who goes $9$ for $9$ and another who goes $0$ for $1$ the aggregate average is $90$ percent, closer to $100\%$ than $0\%$. Clearly players who shoot more attempts matter more for these categories, so percentages are scaled by number of attempts vs. the average before the Z-score transformation
 
 I define $m_p$ as player $p$'s average, with $m_\mu$ and $m_\sigma$ as $\mu$ and $\sigma$ over the set of high-performing players. Z-scores for standard categories are then 
 
@@ -34,17 +34,15 @@ $$
 \frac{\frac{a_p}{a_\mu} \left(r_p - r_\mu \right)}{r_\sigma}
 $$
 
-The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list
+The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list. 
 
 ## 2. Justifying Z-scores
 
-As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
-
-Bear with me, the case for them involves laying some theoretical groundwork first 
+As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them
 
 ### A.	Category differences
 
-An important quantity of interest is the difference in category score between two teams. The sign of the difference will determine the winner. 
+The case for Z-scores starts with the exploration of an important quantity; the difference in category score between two teams. The sign of the difference will determine the winner. 
 
 Distributions per player can be transformed into category differences under the assumption that players are chosen randomly. One might expect this to be complicated because all the distributions look a little different from each other. Blocks for example have an unusual “long tail,” with many of the league’s blocks come from a small number of elite shot-blockers. One might be concerned that the total blocking numbers for a team may look different than say, the number of points. 
 
@@ -92,15 +90,15 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_c \right]
 $$
 
-We can see that the expected number of category victories is directly proportional to the sum of Z-scores. For the 'Each category' and 'Rotisserie' formats, this is generally what drafters are trying to optimize for, so there is a compelling case to use Z-scores for those formats. Might as well use them as a heuristic for 'Most Categories' too.
+We can see that the expected number of category victories is directly proportional to the sum of Z-scores. In other words, the higher a player's total Z-score is, the better they are for fantasy. 
 
-What's my problem with Z-scores then?
-    
+This seems like a compelling case for Z-scores as a heuristic. What's my problem with them, then?
+
 ## 3.The flaw of Z-scores
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in real fantasy- even if long-term averages are well-known, performances can vary significantly from one week to the next. In addition to randomly choosing other players, we also should have randomly chosen how they would perform for the week.
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- even if long-term averages are well-known, performances can vary significantly from one week to the next. In addition to randomly choosing other players, we also should have randomly chosen how they would perform for the week.
 
-This does not change $\mu$ but it does change $\sigma$ because it adds another source of variance. Mathematically, typical week-to-week variance must be added to the existing player-to-player variance. 
+This does not change $\mu$ but it does change $\sigma$ because it adds another source of variance. Mathematically, typical week-to-week variance is added to the existing player-to-player variance. 
 
 See below what this looks like for blocks
 
@@ -122,7 +120,9 @@ $$
 \frac{\frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{\sqrt{r_\sigma^2 + r_\tau^2}} 
 $$
 
-I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week variance, and get weighted much less in G-scores than Z-scores
+I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week variance, and carry less weight in G-scores than Z-scores as a result. 
+
+This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. The G-score idea just converts that intuition into a mathematical rigor
 
 ## 5.	Simulation results
 
@@ -136,9 +136,11 @@ The code in this repository performs this simulation with the following paramete
 - Actual weekly performances are sampled for each player for each week
 - Strategies are tested 10,000 times at each seat
 
+The results are, in my opinion, very interesting 
+
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/3e2b2acf-562f-4152-8d41-88bd57798bf1
 
-G-score performed way better than Z-score in the simulation!
+G-score performs way better than Z-score in the simulation!
 
 When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. 
 
