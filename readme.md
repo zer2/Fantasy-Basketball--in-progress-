@@ -2,7 +2,7 @@
 
 Every fantasy basketball dabbler has come across Z-scores at some point. They are cornerstones of how player value is quantified across categories, allowing for the creation of objective ranking lists based on actual performance. Drafters who are inexperienced or simply don’t have the time to do their own research rely on these rankings to make sensible picks, and even dedicated drafters may use them as a starting point.
 
-One would expect that such a widely used metric has a strong theoretical foundation- I certainly did when I first started looking into fantasy basketball rankings. But the reality is that there is not much to support Z-scores besides intuition and years of orthodoxy. 
+One would expect such a widely used metric to have a strong theoretical foundation- I certainly did when I first started looking into fantasy basketball rankings. But the reality is that there is not much to support Z-scores besides intuition and years of orthodoxy. 
 
 I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
@@ -15,26 +15,31 @@ Z-scores are a real concept in statistics. They are what happens to a set of num
 This transformation is useful for number crunchers, because it takes a set of numbers that could have any scale and remakes them into a new set with $\mu = 0$ and $\sigma =1$. Intuitively, this could be helpful in the fantasy basketball context, because all categories should be equally important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
--	Z-scores should not be calculated using statistics from all NBA players, because most NBA players will never sniff fantasy teams and should be irrelevant. One common fix is to first score players by basic Z-score, then use the top players to re-calculate means and standard deviations. Players are then re-ranked with the updated means and standard deviations
--	Another fix is needed for free throw percent and field goal percent. If a team has one player who goes $9$ for $9$ and another who goes $0$ for $1$ the aggregate average is $90$ percent, closer to $100\%$ than $0\%$. Clearly players who shoot more attempts matter more for these categories, so percentages are scaled by number of attempts vs. the average before the Z-score transformation
+-	The percentage categories are adjusted by volume. This is because players who shoot more matter more; if a team has one player who goes $9$ for $9$ and another who goes $0$ for $1$ their aggregate average is $90$ percent, closer to $100\%$ than $0\%$. The fix is to scale percentages by volume divided by average volume before the Z-score transformation
+-	$\mu$  and $\sigma$ are calculated based on players expected to be on fantasy rosters, rather than the entire NBA. Usually the set of top players is approximated by using Z-score calculated across the entire NBA, then Z-scores are recalculated based on $\mu$ and $\sigma$ of the top players
 
-I define $m_p$ as player $p$'s average, with $m_\mu$ and $m_\sigma$ as $\mu$ and $\sigma$ over the set of high-performing players. Z-scores for standard categories are then 
+Now Z-scores as applied to fantasy can be formally defined. With 
+- $m_p$ as player $p$'s average
+- $m_\mu$ as the average for a top player
+- $m_\sigma$ as the standard deviation across top players
+
+Z-scores for standard categories are  
 
 $$
 \frac{m_p - m_\mu}{m_\sigma}
 $$ 
 
-See below for an animation of what weekly blocking numbers look like after the Z-score transformation
-
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/f20be45a-3600-4630-a224-3b07ce40a0dd
-
-And for the percentage categories, with $a$ signifying attempts and $r$ signifying success rate,
+And for the percentage categories, with $a$ signifying attempts and $r$ signifying success rate, Z-scores are
 
 $$
 \frac{\frac{a_p}{a_\mu} \left(r_p - r_\mu \right)}{r_\sigma}
 $$
 
-The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list. 
+See below for an animation of what weekly blocking numbers look like after the Z-score transformation
+
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/f20be45a-3600-4630-a224-3b07ce40a0dd
+
+The aggregate Z-score is the sum of Z-scores across all categories. Ordering all players by aggregate Z-score then produces an intuitively sensible ranking list
 
 ## 2. Justifying Z-scores
 
@@ -96,31 +101,29 @@ This seems like a compelling case for Z-scores as a heuristic. What's my problem
 
 ## 3.The flaw of Z-scores
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- even if long-term averages are well-known, performances can vary significantly from one week to the next. In addition to randomly choosing other players, we also should have randomly chosen how they would perform for the week.
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- even if long-term averages are well-known, performances can vary significantly from one week to the next. Randomly choosing weekly performances would have made the model more realistic. 
 
-This does not change $\mu$ but it does change $\sigma$ because it adds another source of variance. Mathematically, typical week-to-week variance is added to the existing player-to-player variance. 
-
-See below what this looks like for blocks
+Below, see how standard deviation changes for blocks when randomly selecting both player and performance
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ff8961db-d1ad-4851-8bda-bdf6b030fe97
 
-Note that the new standard deviation is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as described in section 2B 
+This standard deviation is larger because it incorporates week-to-week variation. Note that it is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as described in section 2B 
 
 ## 4.	Reformulating Z-scores 
 
-All the same arguments we made before still work, except that we need to replace the standard deviation values. This changes standard Z-scores to 
+It stands to reason that the logic from section 2 can be improved by replacing $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$. For standard categories, this yields scores of 
 
 $$
 \frac{m_p – m_\mu}{\sqrt{m_\sigma^2 + m_\tau^2}} 
 $$
 
-And, for the percentage statistics, 
+And analagously for the percentage statistics, 
 
 $$
 \frac{\frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{\sqrt{r_\sigma^2 + r_\tau^2}} 
 $$
 
-I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week variance, and carry less weight in G-scores than Z-scores as a result. 
+I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result. 
 
 This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. The G-score idea just converts that intuition into a mathematical rigor
 
