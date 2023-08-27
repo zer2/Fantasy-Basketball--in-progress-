@@ -43,19 +43,17 @@ The aggregate Z-score is the sum of Z-scores across all categories. Ordering all
 
 ## 2. Justifying Z-scores
 
-As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them
+As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
+
+The case for Z-scores utilizes a simplifying assumption: that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not strictly true, since drafters are trying to take the strongest players available, not choosing at random. But in aggregate teams probably don't look all that different from random assortments of players, and this assumption makes the math significantly more managable, so it is a sensible place to start.
 
 ### A.	Category differences
 
-The case for Z-scores starts with the exploration of an important quantity; the difference in category score between two teams. The sign of the difference will determine the winner. 
-
-Distributions per player can be transformed into category differences under the assumption that players are chosen randomly. One might expect this to be complicated because all the distributions look a little different from each other. Blocks for example have an unusual “long tail,” with many of the league’s blocks come from a small number of elite shot-blockers. One might be concerned that the total blocking numbers for a team may look different than say, the number of points. 
-
-Fortunately, all of the categories will look similar in aggregate because of one of the most amazing theorems in mathematics, the central limit theorem. The central limit theorem says that when adding a bunch of random numbers together, their average (or sum) ends up looking a lot like a Bell curve, even if the sampled distribution was not a Bell curve. To demonstrate, see the below animation on the difference between two teams’ numbers of blocks. One team has eleven players and the other has twelve, ignoring the unchosen player for the time being 
+The difference in category score between two teams is an important metric because it tells us which team is winning the category and by how much. With the help of the simplifying assumption that players are chosen randomly, we can get a sense of what the difference between two teams will be. Let's say that one team has eleven players, and is trying to choose a twelfth. Team two has twelve players. Then, using real average block numbers, we can randomly choose players for each team many times, and see what the category difference looks like each time. See this simulation being carried out below
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
-The blocking data doesn't look like a Bell curve at all, but the difference in blocks across full teams does
+You may note that the result looks a lot like a bell curve, even though the raw block numbers don't look much like one. This happens because of one of the most amazing theorems in mathematics, the central limit theorem. The central limit theorem says that when adding a bunch of random numbers together, their average (or sum) ends up looking a lot like a Bell curve, even if the sampled distribution was not a Bell curve. So when we add a bunch of players together and compare them, the result will always be roughly Bell-like. 
 
 ### B.	Properties of the category difference
 
@@ -70,8 +68,6 @@ In this case, the standard deviation of the sum is the square root of the sum of
 The unchosen player has a category average of $m_p$. Incorporating them, the mean of the difference goes down by $m_p$, and nothing happens to the standard deviation, since the player’s score is known. Therefore the final difference has mean $m_\mu - m_p$ and standard deviation $\sqrt{23 * m_\sigma^2}$
 
 ### D.	Calculating probability of victory
-
-Mathematically, this is the trickiest part. 
 
 We have a probability distribution for the difference in score between team two and team one. We already know that whenever the value is below zero, team one will win. So if we can calculate the probability that the distribution is below zero, we will know team one's chance of winning the category.
 
@@ -95,9 +91,9 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_c \right]
 $$
 
-We can see that the expected number of category victories is directly proportional to the sum of Z-scores. In other words, the higher a player's total Z-score is, the better they are for fantasy. 
+We can see that the expected number of category victories is directly proportional to the sum of Z-scores. This tells us that the higher a player's total Z-score is, the better they are for fantasy. 
 
-This seems like a compelling case for Z-scores as a heuristic. What's my problem with them, then?
+This seems like a compelling case for Z-scores as a heuristic. But is there any way for the logic to be improved?
 
 ## 3.The flaw of Z-scores
 
