@@ -45,11 +45,13 @@ The aggregate Z-score is the sum of Z-scores across all categories. Ordering all
 
 As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
 
-The case for Z-scores utilizes a simplifying assumption: that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not strictly true, since drafters are trying to take the strongest players available, not choosing at random. But in aggregate teams probably don't look all that different from random assortments of players, and this assumption makes the math significantly more managable, so it is a sensible place to start.
+The case for Z-scores utilizes a simplifying assumption: that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not strictly true, since drafters are trying to take the strongest players available, not choosing at random. But in aggregate teams probably don't look all that different from random assortments of players, and this assumption makes the math significantly more managable.
+
+Before we can justify Z-scores, we need to lay some theoretical groundwork. You will see that once the groundwork is in place, the case for Z-scores becomes obvious 
 
 ### A.	Category differences
 
-The difference in category score between two teams is an important metric because it tells us which team is winning the category and by how much. With the help of the simplifying assumption that players are chosen randomly, we can get a sense of what the difference between two teams will be. Let's say that one team has eleven players, and is trying to choose a twelfth. Team two has twelve players. Then, using real average block numbers, we can randomly choose players for each team many times, and see what the category difference looks like each time. See this simulation being carried out below
+The difference in category score between two teams is an important metric because it tells us which team is winning the category and by how much. With the help of the simplifying assumption that players are chosen randomly, we can get a sense of what the difference between two teams will be. Let's say that one team has eleven players and is trying to choose a twelfth. The second team has twelve players. Then, using real average block numbers, we can randomly choose players for each team many times, and see what the category difference looks like each time. See this simulation being carried out below
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
