@@ -47,7 +47,7 @@ As I said before, I think Z-scores are suboptimal. But there is a sense in which
 
 The case for Z-scores utilizes a simplifying assumption: that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not strictly true, since drafters are trying to take the strongest players available, not choosing at random. But in aggregate teams probably don't look all that different from random assortments of players, and this assumption makes the math significantly more managable.
 
-Before we can justify Z-scores, we need to lay some theoretical groundwork. You will see that once the groundwork is in place, the case for Z-scores becomes obvious 
+Before we can justify Z-scores, we need to lay some theoretical groundwork. You will see that once the groundwork is in place, the case for Z-scores becomes immediately apparent 
 
 ### A.	Category differences
 
