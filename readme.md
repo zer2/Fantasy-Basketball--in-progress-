@@ -61,11 +61,13 @@ You may note that the result looks a lot like a Bell curve, even though the raw 
 
 ### B.	Properties of the category difference
 
-It is helpful to calculate the mean and standard deviation of the Bell curve from the example above, where one team has eleven players and another has twelve, with one player yet to be picked. 
+It is helpful to calculate the mean and standard deviation of the Bell curve from the scenario above, where team one has eleven players and team two has twelve. 
 
-When adding numbers together, the sum of individual means becomes the overall mean. When some of those numbers are subtracted instead, their means are subtracted from the total mean rather than added. That makes the overall mean of the difference $12 * m_\mu - 11 * m_\mu = m_\mu$.
+Adding all of the scores from team two and subtracting the scores from team one is the same thing as adding all of them together, except the team one scores are multiplied by $-1$. Multiplying by $-1$ switches the sign of the mean without changing the standard deviation. So effectively we are adding eleven variables with mean $-m_\mu$ and standard deviation $\sigma$, and twelve variables with mean $m_\mu$ and standard deviation $\sigma$. 
 
-In this case, the standard deviation of the sum is the square root of the sum of the individual standard deviations (be careful- this isn't always true when correlations are involved). Therefore the standard deviation of the difference is $\sqrt{23 * m_\sigma^2}$ or $\sqrt{23} * m_\sigma$
+When adding random numbers together, the sum of individual means becomes the mean of the total. That makes the mean of the difference $-11 * m_\mu + 12 * m_\mu = m_\mu$.
+
+In this case, the standard deviation of the sum is the square root of the sum of the individual standard deviations (I say "in this case" because the math is more complicated when correlations are involved). Therefore the standard deviation of the difference is $\sqrt{23 * m_\sigma^2}$ or $\sqrt{23} * m_\sigma$
 
 ### C.	Adding the unchosen player
 
