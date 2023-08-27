@@ -37,7 +37,7 @@ $$
 
 See below for an animation of weekly blocking numbers going through the Z-score transformation step by step. First the mean is subtracted out, centering the distribution around zero, then the standard deviation is divided through to make the distribution more narrow
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/c2510de6-cff3-4ba8-b181-d806eeb8eaa7
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/5996da7a-a877-4db1-bb63-c25bed81415f
 
 The transformation looks similar for all the other categories. The sum of the resulting Z-scores from every category is the aggregate Z-score, which provides an intuitive quantification of overall player value
 
