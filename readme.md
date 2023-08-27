@@ -137,17 +137,18 @@ This matches with the way many fantasy players think about volatile categories l
 
 ## 5.	Simulation results
 
-The argument for G-scores makes many assumptions, including that other drafters are picking players randomly, which is definitely not completely true even if they are using a ranking system. It would be interesting to see how G-scores did against Z-scores in a real competition, where the assumptions do not necessarily hold true.
+The argument for G-scores makes many assumptions, including that other drafters are picking players randomly, which is definitely not completely true even if they are using a ranking system. It would be interesting to see how G-scores do against Z-scores in a "real" competition, where the assumptions do not necessarily hold true.
 
-The code in this repository performs this simulation with the following parameters 
+The code in this repository simulates fantasy basketball with the following parameters 
 
 - Drafts are 12-team, 13-player, total categories. So the expected win rate is 8.33%
 - Teams consist of 2 C, 1 PG, 1 SG, 2 G, 1 SF, 1 PF, 2F, 3 Utility. All games played are counted
-- All drafters pick the highest-ranking available player that could fit on their team
-- Actual weekly performances are sampled for each player for each week
-- Strategies are tested 10,000 times at each seat
+- All drafters pick the highest-ranking available player that could fit on their team, based on empirically correct rankings for the season
+- Actual weekly performances are sampled for each player for each of twenty-five weeks
+- The team with the best record wins (there are no playoffs)
+- Strategies are tested 10,000 times at each initial drafting position
 
-The results are, in my opinion, very interesting 
+Results are shown below 
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/3e2b2acf-562f-4152-8d41-88bd57798bf1
 
