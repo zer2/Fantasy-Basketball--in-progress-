@@ -1,21 +1,19 @@
 # Z-scores don’t make good rankings
 
-Every fantasy basketball dabbler has come across Z-scores at some point. They are cornerstones of how player value is quantified across categories, allowing for the creation of objective ranking lists based on actual performance. Drafters who are inexperienced or simply don’t have the time to do their own research rely on these rankings to make sensible picks, and even dedicated drafters may use them as a starting point.
+Z-scores are the standard way to quantify player value for fantasy sports with category scoring. Drafters who are inexperienced or simply don’t have the time to do their own research rely on Z-score rankings to make sensible picks, and even dedicated drafters may use them as a starting point.
 
-One would expect such a widely used metric to have a strong theoretical foundation- I certainly did when I first started looking into fantasy basketball rankings. But the reality is that there is not much to support Z-scores besides intuition and years of orthodoxy. 
-
-I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
+However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
 I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow
 
 ## 1.	What are Z-scores?
 
-Z-scores are a real concept in statistics. They are what happens to a set of numbers after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. So if a set of numbers has an average of $10$ and a standard deviation of $5$, $Z(20) = \frac{20-10}{5} = 2$
+Z-scores are a real concept in statistics. They are what happens to a set of numbers after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. 
 
 This transformation is useful for number crunchers, because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, this could be helpful in the fantasy basketball context, because all categories should be equally important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
--	The percentage categories are adjusted by volume. This is because players who shoot more matter more; if a team has one player who goes $9$ for $9$ and another who goes $0$ for $1$ their aggregate average is $90$ percent, closer to $100\%$ than $0\%$. The standard fix is to multiply percentages by volume divided by average volume before the Z-score transformation
+-	The percentage categories are adjusted by volume. This is because players who shoot more matter more; if a team has one player who goes $9$ for $9$ (100%) and another who goes $0$ for $1$ (0%) their aggregate average is 90% rather than 50\%. The fix is to multiply scores by the player's volume, relative to average volume
 -	$\mu$  and $\sigma$ are calculated based on players expected to be on fantasy rosters, rather than the entire NBA. Usually the set of top players is approximated by using Z-score calculated across the entire NBA, then Z-scores are recalculated based on $\mu$ and $\sigma$ of the top players
 
 Now Z-scores can be formally defined for the fantasy context. With 
