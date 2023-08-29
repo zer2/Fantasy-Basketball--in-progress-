@@ -4,7 +4,12 @@ Z-scores are the standard way to quantify player value for fantasy sports with c
 
 However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
-I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow
+I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow. If not, feel free to reach out to me and I will do my best to clarify. 
+
+Also, I'm going to assume some knowledge of how fantasy basketball works. If you are unfamiliar with the rules, here are some useful links
+- [General intro](https://dunkorthree.com/how-fantasy-basketball-work/)
+- [Scoring formats](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
+This analysis will focus on the "Head-to-Head: Each Category" format
 
 ## 1.	What are Z-scores?
 
@@ -47,13 +52,13 @@ As I said before, I think Z-scores are suboptimal. But there is a sense in which
 
 ### A. Assumptions and setup
 
-The case for Z-scores utilizes the simplifying assumption that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But in aggregate teams probably don't look all that different from random assortments of players, and this assumption makes the math significantly more managable.
+The case for Z-scores utilizes the simplifying assumption that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But a heuristic as elegant as Z-scores could not be derived without this kind of simplifying assumption. 
 
 Say team one is picking a player in a league with twelve players per team. Besides the unchosen player, they will have eleven other randomly chosen players. Their opponents will all have twelve randomly chosen players. With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
 
 ### B.	Category differences
 
-The difference in category score between two teams tells us which team is winning the category and by how much. By randomly selecting the 23 random players many times, we can get a sense of what the difference between two teams will be before the last player is added. See this simulation being carried out for blocks below
+The difference in category score between two teams tells us which team is winning the category and by how much. By randomly selecting the 23 random players many times, we can get a sense of what team two's score minus team one's score will be before the last player is added. See this simulation being carried out for blocks below
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
@@ -105,13 +110,13 @@ This seems like a compelling case for Z-scores as a heuristic. But is there any 
 
 ## 3.The flaw of Z-scores
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- even if long-term averages are well-known, performances can vary significantly from one week to the next. Randomly choosing weekly performances would have made the model more realistic. 
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- even if long-term averages are well-known, performances can vary significantly from one week to the next. Randomly choosing weekly performances would have made the scenario more realistic. 
 
 Below, see how standard deviation changes for blocks when randomly selecting both player and performance
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ff8961db-d1ad-4851-8bda-bdf6b030fe97
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
-This standard deviation is larger because it incorporates week-to-week variation. Note that it is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
+Although the mean remains the same, the standard deviation is larger because it incorporates week-to-week variation. Note that it is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
 
 ## 4.	Reformulating Z-scores 
 
@@ -137,7 +142,7 @@ The argument for G-scores makes many assumptions, including that other drafters 
 
 The code in this repository simulates fantasy basketball with the following parameters 
 
-- Drafts are 12-team, 13-player, total categories. So the expected win rate is 8.33%
+- Drafts are 12-team, 13-player, "Head-to-Head: Each Category" format. So the expected win rate is 8.33%
 - Teams consist of 2 C, 1 PG, 1 SG, 2 G, 1 SF, 1 PF, 2F, 3 Utility. All games played are counted
 - All drafters pick the highest-ranking available player that could fit on their team, based on empirically correct rankings for the season
 - Actual weekly performances are sampled for each player for each of twenty-five weeks
@@ -146,7 +151,7 @@ The code in this repository simulates fantasy basketball with the following para
 
 Results are shown below 
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/3e2b2acf-562f-4152-8d41-88bd57798bf1
+https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/a7f56aea-dc05-4b0f-89df-9044c2275024
 
 G-scores perform way better than Z-scores in the simulation! This is evidence that the logic above makes sense, and the G-score modification really is appropriate. 
 
