@@ -111,7 +111,7 @@ This seems like a compelling case for Z-scores as a heuristic. But is there any 
 
 ## 3.The flaw of Z-scores
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- even if long-term averages are well-known, performances can vary significantly from one week to the next. Randomly choosing weekly performances would have made the scenario more realistic. 
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. Randomly choosing weekly performances would have made the scenario more realistic. 
 
 Below, see how standard deviation changes for blocks when randomly selecting both player and performance
 
