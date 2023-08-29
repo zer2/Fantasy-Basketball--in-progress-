@@ -1,16 +1,14 @@
-# Z-scores don’t make good rankings
+*Hey! This repository concerns fantasy basketball. If you are unfamiliar with how it works, here are some useful links*
+- [*General intro*](https://dunkorthree.com/how-fantasy-basketball-work/)
+- [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats) 
+
+# Z-scores don’t always make the best rankings
 
 Z-scores are the standard way to quantify player value for fantasy sports with category scoring. Drafters who are inexperienced or simply don’t have the time to do their own research rely on Z-score rankings to make sensible picks, and even dedicated drafters may use them as a starting point.
 
 However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
 I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow. If not, feel free to reach out to me and I will do my best to clarify. 
-
-Also, I'm going to assume some knowledge of how fantasy basketball works. If you are unfamiliar with the rules, here are some useful links
-- [General intro](https://dunkorthree.com/how-fantasy-basketball-work/)
-- [Scoring formats](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
-  
-This analysis will focus on the "Head-to-Head: Each Category" drafts, though I believe it also has implications for others
 
 ## 1.	What are Z-scores?
 
@@ -49,7 +47,9 @@ The sum of the resulting Z-scores from every category is the aggregate Z-score, 
 
 ## 2. Justifying Z-scores
 
-As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them
+As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
+
+We will consider Z-scores in the context of the "Head-to-Head: Each Category" format, because it is popular and relatively easy to analyze. The addendum discusses implications for other formats
 
 ### A. Assumptions and setup
 
@@ -164,7 +164,7 @@ Also, ranking systems are inherently suboptimal because they cannot adapt to the
 
 This analysis has focused on the "Head-to-Head: Each Category" format. For completeness' sake, here are my thoughts on the implications for other formats 
 - "Rotisserie": Since Rotisserie uses full-season scores, week-to-week variance is irrelevant and Z-scores make sense
-- "Head-to-Head: Most Categories": If you are just going to go off a ranking list for this format, my simulations suggest that G-score is better than Z-score. It stands to reason that if you are going to punt some categories and aggregate values for the others, G-score is still the way to go
+- "Head-to-Head: Most Categories": My simulations suggest that G-scores work much better than Z-scores in this format. I chose not to include the results here because this is a very strategic format, and following any ranking list is probably suboptimal. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores
 - "Head-to-head: Points"/"Season Points": No implication, points is totally different
 
 Also, if you are doing an auction instead of a draft, you can translate Z/G scores to dollar values instead of ranks. The appropriate procedure is well known and is outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393)
