@@ -9,7 +9,8 @@ I realize that the explanation included in the paper is not particularly readabl
 Also, I'm going to assume some knowledge of how fantasy basketball works. If you are unfamiliar with the rules, here are some useful links
 - [General intro](https://dunkorthree.com/how-fantasy-basketball-work/)
 - [Scoring formats](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
-This analysis will focus on the "Head-to-Head: Each Category" format
+  
+This analysis will focus on the "Head-to-Head: Each Category" drafts, though I believe it also has implications for others
 
 ## 1.	What are Z-scores?
 
@@ -158,3 +159,12 @@ G-scores perform way better than Z-scores in the simulation! This is evidence th
 When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. 
 
 Also, ranking systems are inherently suboptimal because they cannot adapt to the circumstances of the draft. In the paper, I outline a methodology for dynamically choosing players which performs better. It's just the tip of the iceberg though; I believe much more sophisticated algorithms could be developed to push performance even further
+
+## 6.	Addendum: on formats 
+
+This analysis has focused on the "Head-to-Head: Each Category" format. For completeness' sake, here are my thoughts on the implications for other formats 
+- "Rotisserie": Since Rotisserie uses full-season scores, week-to-week variance is irrelevant and Z-scores make sense
+- "Head-to-Head: Most Categories": If you are just going to go off a ranking list for this format, my simulations suggest that G-score is better than Z-score. It stands to reason that if you are going to punt some categories and aggregate values for the others, G-score is still the way to go
+- "Head-to-head: Points"/"Season Points": No implication, points is totally different
+
+Also, if you are doing an auction instead of a draft, you can translate Z/G scores to dollar values instead of ranks. The appropriate procedure is well known and is outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393)
