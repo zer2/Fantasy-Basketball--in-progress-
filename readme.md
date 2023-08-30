@@ -1,31 +1,32 @@
 *Hey! This repository concerns fantasy basketball. If you are unfamiliar with how it works, here are some useful links*
 - [*General intro*](https://dunkorthree.com/how-fantasy-basketball-work/)
-- [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats) 
+- [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
+- [*Snake vs auction drafts*](https://www.dummies.com/article/home-auto-hobbies/sports-recreation/fantasy-sports/fantasy-football/understanding-fantasy-football-snake-and-auction-drafts-149492/)
 
-# Z-scores don’t always make the best rankings
+# Z-scores are flawed
 
-Z-scores are the standard way to quantify player value for fantasy sports with category scoring (if you haven't encountered them before don't worry, I'll define them shortly). Many drafters who are inexperienced or simply don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for their strategies.
+The standard way to quantify player value across categories is a metric called Z-score. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies.
 
-However, just because something is standard does not mean that it is always correct. I believe that while Z-scores are a sensible heuristic, they are flawed and far from optimal in the head-to-head context. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
+However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are suboptimal and inferior to an alternative scoring system that I call the G-score, at least in the head-to-head context. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
-I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow. If not, feel free to reach out to me and I will do my best to clarify!
+I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the explanation included in the paper is too mathy for most people. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow
 
 ## 1.	What are Z-scores?
 
-Z-scores are a real concept in statistics. They are what happens to a set of numbers after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. 
+You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. 
 
-This transformation is useful for number crunchers, because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, this could be helpful in the fantasy basketball context, because all categories should be equally important despite having different scales. 
+This transformation is useful because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, it makes sense to apply it to fantasy basketball, because all categories should be equally important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
--	The percentage categories are adjusted by volume. This is because players who shoot more matter more; if a team has one player who goes $9$ for $9$ ($100\\%$) and another who goes $0$ for $1$ ($0\\%$) their aggregate average is $90\\%$ rather than $50\\%$. The fix is to multiply scores by the player's volume, relative to average volume
--	$\mu$  and $\sigma$ are calculated based on players expected to be on fantasy rosters, rather than the entire NBA. Usually the set of top players is approximated by using Z-score calculated across the entire NBA, then Z-scores are recalculated based on $\mu$ and $\sigma$ of the top players
+-	The percentage categories are adjusted by volume. This is necessary because players who shoot more matter more; if a team has one player who goes $9$ for $9$ ($100\\%$) and another who goes $0$ for $1$ ($0\\%$) their aggregate average is $90\\%$ rather than $50\\%$. The fix is to multiply scores by the player's volume, relative to average volume
+-	$\mu$  and $\sigma$ are calculated based on players expected to be on fantasy rosters, rather than the entire NBA. Players expected to sit on the bench all season never get drafted into fantasy leagues and should be irrelevant. Usually the set of top players is approximated by using Z-score calculated across the entire NBA, then Z-scores are recalculated based on $\mu$ and $\sigma$ of the top players
 
-Now Z-scores can be formally defined for the fantasy context. With 
+To formally define Z-scores, consider
 - $m_p$ as player $p$'s average
 - $m_\mu$ as the average for a top player
 - $m_\sigma$ as the standard deviation across top players
 
-Z-scores for standard categories are  
+Z-scores for standard categories are  then 
 
 $$
 \frac{m_p - m_\mu}{m_\sigma}
@@ -37,13 +38,11 @@ $$
 \frac{\frac{a_p}{a_\mu} \left(r_p - r_\mu \right)}{r_\sigma}
 $$
 
-See below for an animation of weekly blocking numbers going through the Z-score transformation step by step. First the mean is subtracted out, centering the distribution around zero, then the standard deviation is divided through to make the distribution more narrow
+See below for an animation of weekly blocking numbers going through the Z-score transformation step by step. First the mean is subtracted out, centering the distribution around zero, then the standard deviation is divided through to make the distribution more narrow. Note that a set of 156 top players has already been defined
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/5996da7a-a877-4db1-bb63-c25bed81415f
 
-The transformation looks similar for all the other categories.
-
-The sum of the resulting Z-scores from every category is the aggregate Z-score, which provides an intuitive quantification of overall player value
+The transformation looks similar for all the other categories. The sum of the resulting Z-scores from all of them is the aggregate Z-score, which provides an intuitive quantification of overall player value
 
 ## 2. Justifying Z-scores
 
@@ -143,7 +142,9 @@ The argument for G-scores makes many assumptions, including that other drafters 
 
 The code in this repository simulates fantasy basketball with the following parameters 
 
-- Drafts are 12-team, 13-player, "Head-to-Head: Each Category" format. So the expected win rate is 8.33%
+- 12 teams compete, each with 13 players. The expected win rate is $\frac{1}{12} = 8.33\\%$
+- The format is "Head-to-Head: Each Category"
+- Players are chosen in a snake draft
 - Teams consist of 2 C, 1 PG, 1 SG, 2 G, 1 SF, 1 PF, 2F, 3 Utility. All games played are counted
 - All drafters pick the highest-ranking available player that could fit on their team, based on empirically correct rankings for the season
 - Actual weekly performances are sampled for each player for each of twenty-five weeks
@@ -163,7 +164,7 @@ Another possible use-case is auctions. There is a well-known procedure for trans
 ## Addendum 1 : Other formats  
 
 This analysis has focused on the head-to-head formats. For completeness' sake, here are my thoughts on why there are no implications for other formats 
-- "Rotisserie": Since Rotisserie uses full-season scores, week-to-week variance is irrelevant and Z-scores make sense
+- "Rotisserie": Since Rotisserie uses full-season scores, week-to-week variance is irrelevant and Z-scores still make sense
 - "Head-to-Head: Points"/"Season Points": Points leagues don't use category scoring, so neither Z-scores nor G-scores are applicable 
 
 ## Addendum 2: Further improvement 
