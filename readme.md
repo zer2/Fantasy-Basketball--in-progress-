@@ -138,10 +138,9 @@ This matches with the way many fantasy players think about volatile categories l
 
 ## 5.	Simulation results
 
-The argument for G-scores makes many assumptions, including that other drafters are picking players randomly, which is definitely not completely true even if they are using a ranking system. It would be interesting to see how G-scores do against Z-scores in a "real" competition, where the assumptions do not necessarily hold true.
+All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually would work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does compared to Z-score. 
 
 The code in this repository simulates fantasy basketball with the following parameters 
-
 - 12 teams compete, each with 13 players. The expected win rate is $\frac{1}{12} = 8.33\\%$
 - The format is "Head-to-Head: Each Category"
 - Players are chosen in a snake draft
