@@ -4,11 +4,11 @@
 
 # Z-scores don’t always make the best rankings
 
-Z-scores are the standard way to quantify player value for fantasy sports with category scoring. Drafters who are inexperienced or simply don’t have the time to do their own research rely on Z-score rankings to make sensible picks, and even dedicated drafters may use them as a starting point.
+Z-scores are the standard way to quantify player value for fantasy sports with category scoring (if you haven't encountered them before don't worry, I'll define them shortly). Many drafters who are inexperienced or simply don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for their strategies.
 
-However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are fundamentally flawed and far from the optimal ranking system. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
+However, just because something is standard does not mean that it is always correct. I believe that while Z-scores are a sensible heuristic, they are flawed and far from optimal in the head-to-head context. I wrote a paper to that effect earlier this month, which is available [here](https://arxiv.org/abs/2307.02188). Some readers may be interested in it. The code used to investigate the papers' hypotheses is included in this GitHub repository. 
 
-I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow. If not, feel free to reach out to me and I will do my best to clarify. 
+I realize that the explanation included in the paper is not particularly readable, especially for those unfamiliar with the relevant mathematical concepts. Hopefully the simplified argument presented here will be easier to follow. If not, feel free to reach out to me and I will do my best to clarify!
 
 ## 1.	What are Z-scores?
 
@@ -49,7 +49,7 @@ The sum of the resulting Z-scores from every category is the aggregate Z-score, 
 
 As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
 
-We will consider Z-scores in the context of the "Head-to-Head: Each Category" format, because it is popular and relatively easy to analyze. The addendum discusses implications for other formats
+The proof will consider Z-scores in the context of the "Head-to-Head: Each Category" format, because it is relatively easy to analyze compared to "Head-to-Head: Most Categories." 
 
 ### A. Assumptions and setup
 
@@ -154,17 +154,21 @@ Results are shown below
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/a7f56aea-dc05-4b0f-89df-9044c2275024
 
-G-scores perform way better than Z-scores in the simulation! This is evidence that the logic above makes sense, and the G-score modification really is appropriate. 
+When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that our logic makes sense, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
 
-When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. 
+Simulations also suggest that G-scores work better than Z-scores in the "Head-to-Head: Most Categories" format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores.
 
-Also, ranking systems are inherently suboptimal because they cannot adapt to the circumstances of the draft. In the paper, I outline a methodology for dynamically choosing players which performs better. It's just the tip of the iceberg though; I believe much more sophisticated algorithms could be developed to push performance even further
+Another possible use-case is auctions. There is a well-known procedure for translating player value to auction value, outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393). If the auction is for a head-to-head format, it is reasonable to use G-scores to quantify value rather than Z-scores
 
-## 6.	Addendum: on formats 
+## Addendum 1 : Other formats  
 
-This analysis has focused on the "Head-to-Head: Each Category" format. For completeness' sake, here are my thoughts on the implications for other formats 
+This analysis has focused on the head-to-head formats. For completeness' sake, here are my thoughts on why there are no implications for other formats 
 - "Rotisserie": Since Rotisserie uses full-season scores, week-to-week variance is irrelevant and Z-scores make sense
-- "Head-to-Head: Most Categories": My simulations suggest that G-scores work much better than Z-scores in this format. I chose not to include the results here because this is a very strategic format, and following any ranking list is probably suboptimal. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores
-- "Head-to-head: Points"/"Season Points": No implication, points is totally different
+- "Head-to-Head: Points"/"Season Points": Points leagues don't use category scoring, so neither Z-scores nor G-scores are applicable 
 
-Also, if you are doing an auction instead of a draft, you can translate Z/G scores to dollar values instead of ranks. The appropriate procedure is well known and is outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393)
+## Addendum 2: Further improvement 
+
+Any situation-agnostic value quantification system is subptimal, since a truly optimal strategy would adapt to the circumstances of the draft/auction. 
+
+In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand how to incorporate punting. There is a lot of room for improvelemt and I hope that I, or someone else, can make a better version in the future! 
+
