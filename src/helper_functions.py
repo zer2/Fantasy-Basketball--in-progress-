@@ -35,6 +35,8 @@ def cleanup_name_str(x):
     return x
 
 def setup(season):
+    """Prepares a stat dataframe and a position series for a season"""
+
     season_str = str(season - 1) + '-' + str(season)[2:]
     stat_df = pd.read_csv('../data/stat_data/' + season_str + '_complete.csv')\
             [['PLAYER_ID','PTS','REB','AST','STL','BLK','FG3M','TO','FGM','FGA','FTM','FTA','date']]
@@ -45,12 +47,13 @@ def setup(season):
 
     essential_info = stat_df.merge(player_df[['id','player']])
 
-    position_df = position_df[position_df['season'] == season] #previously 2022
+    position_df = position_df[position_df['season'] == season] 
     positions = position_df.set_index(['player'])['pos']
     
     essential_info['date'] = pd.to_datetime(essential_info['date'])
     essential_info['week'] = essential_info['date'].dt.isocalendar()['week']
 
+    #make sure we aren't missing any weeks when a player didn't play
     weekly_df_index = pd.MultiIndex.from_product([pd.unique(essential_info['player'])
                                                  ,pd.unique(essential_info['week'])]
                                                  ,names = ['player','week'])
@@ -112,27 +115,6 @@ def get_eligibility_row(pos):
         eligibility.update((5,6))
     return np.array([[i in eligibility for i in range(8)]])
 
-#the tipping point helper takes a 9 x 1 array and returns tipping point probabilities for each 
-def tipping_point_helper(x):
-
-    #create a grid representing 126 scenarios where 5 categories are won and 4 are lost
-    which = np.array(list(itertools.combinations(range(9), 5)))
-    grid = np.zeros((len(which), 9), dtype="int8")     
-    grid[np.arange(len(which))[None].T, which] = 1
-    
-    #get the probabilities of the scenarios and filter them by which categories they apply to
-    #the categories that are won all become tipping points
-    positive_case_probabilities = ((grid * x + (1-grid) * (1-x)) \
-                                   .prod(axis = 1).reshape(126,1) * grid).sum(axis = 0)
-    
-    #do the same but for the inverse scenarios, where 5 categories are lost and 4 are won
-    #in this case the lost categories become tipping points 
-    negative_case_probabilities = (((1 - grid) * x + grid * (1-x)) \
-                                   .prod(axis = 1).reshape(126,1) * grid).sum(axis = 0)
-    final_probabilities = positive_case_probabilities + negative_case_probabilities
-    
-    return final_probabilities
-
 
 #this recursive function allows us to enumerate the winning probabilities efficiently
 #it allows the drafter to work ~5 times faster than it would with a list comprehension for the same step 
@@ -180,101 +162,20 @@ def combinatorial_calculation(c
     else: #a series where all 9 categories has been processed, and n_false <= the cutoff, can be added to the total %
         return data
 
-def process_stat_df(stat_df, categories,name = None):
-    """manually add a section of the stat df for FG% and FT%, and flip turnovers """
 
-    stat_df.loc[:,('tov','mean')] = - stat_df.loc[:,('tov','mean')]
-    
-    agg_series = stat_df.sum(axis = 0) 
-
-    with np.errstate(invalid='ignore', divide='ignore'):
-
-        agg_series.loc[('fg_pct','mean')] = stat_df.loc[:,('fg','mean')].sum()/stat_df.loc[:,('fga','mean')].sum()
-        agg_series.loc[('ft_pct','mean')] = stat_df.loc[:,('ft','mean')].sum()/stat_df.loc[:,('fta','mean')].sum()
-    
-        agg_series.loc[('fg_pct','var')] = (stat_df.loc[:,('fg','var')]).sum()/(stat_df.loc[:,('fga','mean')].sum())**2
-        agg_series.loc[('ft_pct','var')] = (stat_df.loc[:,('ft','var')]).sum()/(stat_df.loc[:,('fta','mean')].sum())**2
-    
-    agg_series = agg_series[categories]
-    agg_series.sort_index(inplace = True)
-    
-    if name is not None:
-        agg_series.name = name
-
-    return agg_series
-
-#make calculate_total_scores to get score totals, while scores just gives G-values
-
-def calculate_scores(season_df
-                     , representative_player_set
-                     , alpha_weight = 1
-                     , beta_weight = 1
-                    , return_weight_fractions = False):
-    
-    main_categories = ['pts', 'trb', 'ast', 'stl', 'blk', 'fg3','tov']
-    player_stats = season_df.groupby(level = 'player').agg(['mean','var'], ddof = 0)
-
-    mean_of_means = player_stats.loc[representative_player_set,(main_categories,'mean')].mean(axis = 0)
-    means_of_var = player_stats.loc[representative_player_set,(main_categories,'var')].mean(axis = 0)
-    var_of_means = player_stats.loc[representative_player_set,(main_categories,'mean')].var(axis = 0, ddof = 0)
-
-    denominator = (var_of_means.values*alpha_weight + means_of_var.values*beta_weight ) ** 0.5
-    numerator = player_stats.loc[:,(main_categories,'mean')] - mean_of_means
-    main_scores = numerator.divide(denominator)
-    main_scores['tov'] = - main_scores['tov']
-
-    #free throws 
-    ft_mean_of_means = player_stats.loc[representative_player_set, ('ft','mean')].mean()
-    fta_mean_of_means = player_stats.loc[representative_player_set, ('fta','mean')].mean()
-    ftp = player_stats.loc[:, ('ft','mean')]/player_stats.loc[:, ('fta','mean')]
-    ftp_agg_average = ft_mean_of_means / fta_mean_of_means
-    ftp_numerator = player_stats.loc[:, ('fta','mean')]/fta_mean_of_means * (ftp - ftp_agg_average)
-    ftp_var_of_means = ftp_numerator.loc[representative_player_set].var()
-    
-    #season_df.loc[:,'volume_adjusted_ftp'] = (season_df['ft'] - season_df['fta']*ftp)/ \
-    #                                            player_stats.loc[representative_player_set, ('fta','mean')]
-    season_df.loc[:,'volume_adjusted_ftp'] = (season_df['ft'] - season_df['fta']*ftp_agg_average)/ \
-                                                fta_mean_of_means
-    ftp_mean_of_vars = season_df['volume_adjusted_ftp'].loc[representative_player_set].groupby('player').var().mean()
-    
-    ftp_denominator = (ftp_var_of_means*alpha_weight + ftp_mean_of_vars*beta_weight)**0.5
-    ftp_score = ftp_numerator.divide(ftp_denominator)
-
-    #field goals
-    fg_mean_of_means = player_stats.loc[representative_player_set, ('fg','mean')].mean()
-    fga_mean_of_means = player_stats.loc[representative_player_set, ('fga','mean')].mean()
-    fgp_agg_average = fg_mean_of_means / fga_mean_of_means
-    fgp = player_stats.loc[:, ('fg','mean')]/player_stats.loc[:, ('fga','mean')]
-    fgp_numerator = player_stats.loc[:, ('fga','mean')]/fga_mean_of_means * (fgp - fgp_agg_average)
-    fgp_var_of_means = fgp_numerator.loc[representative_player_set].var()
-    
-    #season_df.loc[:,'volume_adjusted_fgp'] = (season_df['fg'] - season_df['fga']*fgp)/ \
-    #                                            player_stats.loc[representative_player_set, ('fga','mean')]
-    season_df.loc[:,'volume_adjusted_fgp'] = (season_df['fg'] - season_df['fga']*fgp_agg_average)/ \
-                                            fga_mean_of_means
-    fgp_mean_of_vars = season_df['volume_adjusted_fgp'].loc[representative_player_set].groupby('player').var().mean()    
-    
-    fgp_denominator = (fgp_var_of_means*alpha_weight + fgp_mean_of_vars*beta_weight)**0.5
-    fgp_score = fgp_numerator.divide(fgp_denominator)
-    
-    if not return_weight_fractions:
-        return pd.concat([main_scores, ftp_score, fgp_score],axis = 1)  
-    else:
-        fraction = means_of_var.loc[:,'var']**0.5/(var_of_means.loc[:,'mean'] + means_of_var.loc[:,'var'])**0.5
-        fraction.loc['ft_pct'] = ftp_var_binomial**0.5/(ftp_var_of_means + ftp_var_binomial)**0.5 
-        fraction.loc['fg_pct'] = fgp_var_binomial**0.5/(fgp_var_of_means + fgp_var_binomial)**0.5 
-        return pd.concat([main_scores, ftp_score, fgp_score],axis = 1), fraction
-    
 def calculate_coefficients(season_df
                      , representative_player_set):
-    
+    """calculate the coefficients for each category- \mu,\sigma, and \tau, so we can use them for Z-scores and G-scores """
+
     main_categories = ['pts', 'trb', 'ast', 'stl', 'blk', 'fg3','tov']
     player_stats = season_df.groupby(level = 'player').agg(['mean','var'])
 
+    #counting stats
     mean_of_vars = player_stats.loc[representative_player_set,(main_categories,'var')].mean(axis = 0)
     var_of_means = player_stats.loc[representative_player_set,(main_categories,'mean')].var(axis = 0)
     mean_of_means = player_stats.loc[representative_player_set,(main_categories,'mean')].mean(axis = 0)
 
+    #free throw percent
     ft_mean_of_means = player_stats.loc[representative_player_set, ('ft','mean')].mean()
     fta_mean_of_means = player_stats.loc[representative_player_set, ('fta','mean')].mean()
     mean_of_means.loc['fta'] = fta_mean_of_means
@@ -285,13 +186,12 @@ def calculate_coefficients(season_df
     ftp_var_of_means = ftp_numerator.loc[representative_player_set].var()
     var_of_means.loc['ft_pct'] = ftp_var_of_means
     
-    #season_df.loc[:,'volume_adjusted_ftp'] = (season_df['ft'] - season_df['fta']*ftp)/ \
-    #                                            player_stats.loc[representative_player_set, ('fta','mean')]
     season_df.loc[:,'volume_adjusted_ftp'] = (season_df['ft'] - season_df['fta']*ftp_agg_average)/ \
                                             fta_mean_of_means
     ftp_mean_of_vars = season_df['volume_adjusted_ftp'].loc[representative_player_set].groupby('player').var().mean()
     mean_of_vars.loc['ft_pct'] = ftp_mean_of_vars
 
+    #field goal percent
     fg_mean_of_means = player_stats.loc[representative_player_set, ('fg','mean')].mean()
     fga_mean_of_means = player_stats.loc[representative_player_set, ('fga','mean')].mean()
     mean_of_means.loc['fga'] = fga_mean_of_means
@@ -301,8 +201,6 @@ def calculate_coefficients(season_df
     fgp_numerator = player_stats.loc[:, ('fga','mean')]/fga_mean_of_means * (fgp - fgp_agg_average)
     fgp_var_of_means = fgp_numerator.loc[representative_player_set].var()
     var_of_means.loc['fg_pct'] = fgp_var_of_means
-    #season_df.loc[:,'volume_adjusted_fgp'] = (season_df['fg'] - season_df['fga']*fgp)/ \
-    #                                         player_stats.loc[representative_player_set, ('fga','mean')]
     season_df.loc[:,'volume_adjusted_fgp'] = (season_df['fg'] - season_df['fga']*fgp_agg_average)/ \
                                         fga_mean_of_means
     fgp_mean_of_vars = season_df['volume_adjusted_fgp'].loc[representative_player_set].groupby('player').var().mean()    
@@ -316,6 +214,7 @@ def calculate_scores_from_coefficients(season_df
                                        ,mean_of_vars
                                        ,alpha_weight = 1
                                        ,beta_weight = 1):
+    """Calculate scores based on player info and coefficients. alpha_weight is for \sigma, beta_weight is for \tau"""
     
     main_categories = ['pts', 'trb', 'ast', 'stl', 'blk', 'fg3','tov']
     player_stats = season_df.groupby(level = 'player').mean()
