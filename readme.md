@@ -17,7 +17,7 @@ Z-scores are a real concept in statistics. They are what happens to a set of num
 This transformation is useful for number crunchers, because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, this could be helpful in the fantasy basketball context, because all categories should be equally important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
--	The percentage categories are adjusted by volume. This is because players who shoot more matter more; if a team has one player who goes $9$ for $9$ (100%) and another who goes $0$ for $1$ (0%) their aggregate average is 90% rather than 50\%. The fix is to multiply scores by the player's volume, relative to average volume
+-	The percentage categories are adjusted by volume. This is because players who shoot more matter more; if a team has one player who goes $9$ for $9$ ($100\\%$) and another who goes $0$ for $1$ ($0\\%$) their aggregate average is $90\\%$ rather than $50\\%$. The fix is to multiply scores by the player's volume, relative to average volume
 -	$\mu$  and $\sigma$ are calculated based on players expected to be on fantasy rosters, rather than the entire NBA. Usually the set of top players is approximated by using Z-score calculated across the entire NBA, then Z-scores are recalculated based on $\mu$ and $\sigma$ of the top players
 
 Now Z-scores can be formally defined for the fantasy context. With 
