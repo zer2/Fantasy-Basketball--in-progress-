@@ -168,7 +168,7 @@ The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33
 
 When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that the assumption of randomness wasn't too problematic, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
 
-To confirm the intuition about why the G-score works, take a look at the win rates by category for the G-score drafter against 11 Z-score drafters in 9-Cat
+To confirm the intuition about why the G-score works, take a look at its win rates by category against eleven Z-score drafters in 9-Cat
 
 |     | G-score win rate | 
 | -------- | ------- |
