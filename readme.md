@@ -3,13 +3,13 @@
 - [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
 - [*Snake vs auction drafts*](https://www.dummies.com/article/home-auto-hobbies/sports-recreation/fantasy-sports/fantasy-football/understanding-fantasy-football-snake-and-auction-drafts-149492/)
 
-# Z-scores are flawed
+# Why I think Z-scores can be improved
 
-The standard way to quantify player value across categories is a metric called Z-score. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies.
+Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring'. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
 
 However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are suboptimal and inferior to an alternative scoring system that I call the G-score, at least in the head-to-head context. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
-I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the explanation included in the paper is too mathy for most people. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow
+I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It will define Z-scores precisely, present a logical argument for their use, then improve the argument to derive G-scores as a more appropriate ranking system
 
 ## 1.	What are Z-scores?
 
