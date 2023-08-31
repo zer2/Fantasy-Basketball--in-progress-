@@ -1,44 +1,44 @@
-*Hey! This repository concerns fantasy basketball. If you are unfamiliar with how it works, here are some useful links*
+*Hey! This repository deals with fantasy basketball. If you are unfamiliar with how it works, here are some useful links*
 - [*General intro*](https://dunkorthree.com/how-fantasy-basketball-work/)
 - [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
 - [*Snake vs auction drafts*](https://www.dummies.com/article/home-auto-hobbies/sports-recreation/fantasy-sports/fantasy-football/understanding-fantasy-football-snake-and-auction-drafts-149492/)
 
 # Why I think Z-scores can be improved
 
-Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make numerical rankings of players. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
+Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make objective rankings of players. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
 
-However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are suboptimal and inferior to an alternative scoring system that I call the G-score, at least in the head-to-head context. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
+However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they do not work as well as an alternative that I call "G-scores", at least in the head-to-head context. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
-I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It will define Z-scores precisely, present a logical argument for their use, then improve the argument to derive G-scores as a more appropriate ranking system
+I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It defines Z-scores precisely, presents a logical argument for their use, then refines the argument to derive G-scores
 
 ## 1.	What are Z-scores?
 
-You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) represented as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) represented as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. 
+You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) signified by $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) signified by $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$
 
 This transformation is useful because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, it makes sense to apply it to fantasy basketball, because all categories should be equally important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
 -	The percentage categories are adjusted by volume. This is necessary because players who shoot more matter more; if a team has one player who goes $9$ for $9$ ($100\\%$) and another who goes $0$ for $1$ ($0\\%$) their aggregate average is $90\\%$ rather than $50\\%$. The fix is to multiply scores by the player's volume, relative to average volume
--	$\mu$  and $\sigma$ are calculated based on players expected to be on fantasy rosters, rather than the entire NBA. Players expected to sit on the bench all season never get drafted into fantasy leagues and should be irrelevant. Usually the set of top players is approximated by using Z-score calculated across the entire NBA, then Z-scores are recalculated based on $\mu$ and $\sigma$ of the top players
+-	$\mu$ and $\sigma$ are calculated based on the $\approx 150$ players expected to be on fantasy rosters, rather than the entire NBA
+  
+Denoting
+- Player $p$'s average as $m_p$ 
+- $\mu$ across players expected to be on fantasy rosters as $m_\mu$
+- $\sigma$ across players expected to be on fantasy rosters as $m_\sigma$ 
 
-To formally define Z-scores, consider
-- $m_p$ as player $p$'s average
-- $m_\mu$ as the average for a top player
-- $m_\sigma$ as the standard deviation across top players
-
-Z-scores for standard categories are  then 
+Z-scores for standard categories (points, rebounds, assists, steals, blocks, three-pointers, and sometimes turnovers) are  
 
 $$
 \frac{m_p - m_\mu}{m_\sigma}
 $$ 
 
-And for the percentage categories, with $a$ signifying attempts and $r$ signifying success rate, Z-scores are
+The same definition can be extended to the percentage categories (field goal % and free throw %). With $a$ signifying attempts and $r$ signifying success rate, their Z-scores are
 
 $$
 \frac{\frac{a_p}{a_\mu} \left(r_p - r_\mu \right)}{r_\sigma}
 $$
 
-See below for an animation of weekly blocking numbers going through the Z-score transformation step by step. First the mean is subtracted out, centering the distribution around zero, then the standard deviation is divided through to make the distribution more narrow. Note that a set of 156 top players has already been defined
+See below for an animation of weekly blocking numbers going through the Z-score transformation step by step. First the mean is subtracted out, centering the distribution around zero, then the standard deviation is divided through to make the distribution more narrow. Note that a set of $156$ players expected to be on fantasy rosters is pre-defined
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/5996da7a-a877-4db1-bb63-c25bed81415f
 
@@ -48,7 +48,7 @@ The transformation looks similar for all the other categories. The sum of the re
 
 As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
 
-The proof will consider Z-scores in the context of the "Head-to-Head: Each Category" format, because it is relatively easy to analyze compared to "Head-to-Head: Most Categories." 
+The proof will consider Z-scores in the context of the "Head-to-Head: Each Category" format, because it is relatively easy to analyze compared to the other head-to-head format, "Most Categories"
 
 ### A. Assumptions and setup
 
@@ -58,7 +58,7 @@ For the sake of an example, let's imagine a league where teams have twelve playe
 
 ### B.	Category differences
 
-The difference in category score between two teams tells us which team is winning the category and by how much. By randomly selecting the 23 random players many times, we can get a sense of what team two's score minus team one's score will be before the last player is added. See this simulation being carried out for blocks below
+The difference in category score between two teams tells us which team is winning the category and by how much. By randomly selecting the $23$ random players many times, we can get a sense of what team two's score minus team one's score will be before the last player is added. See this simulation being carried out for blocks below
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
@@ -106,7 +106,7 @@ $$
 
 We can see that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that the higher a player's total Z-score is, the better they are for fantasy, at least under the assumptions we have made. 
 
-This seems like a compelling case for Z-scores as a heuristic. But is there any way for the logic to be improved?
+This seems like a compelling case for Z-scores as a heuristic. So what's my problem with them?
 
 ## 3.The flaw of Z-scores
 
@@ -141,20 +141,49 @@ This matches with the way many fantasy players think about volatile categories l
 All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does compared to Z-score. 
 
 The code in this repository simulates fantasy basketball with the following parameters 
-- 12 teams compete, each with 13 players
+- $12$ teams compete, each with $13$ players
 - The format is "Head-to-Head: Each Category"
 - Players are chosen in a snake draft
-- Teams consist of 2 C, 1 PG, 1 SG, 2 G, 1 SF, 1 PF, 2F, 3 Utility. All games played are counted
+- Teams consist of $2$ C, $1$ PG, $1$ SG, $2$ G, $1$ SF, $1$ PF, $2$ F, $3$ Utility. All games played are counted
 - All drafters pick the highest-ranking available player that could fit on their team, based on empirically correct rankings for the season
-- Actual weekly performances are sampled for each player for each of twenty-five weeks
+- Coefficients for Z-scores and G-scores are calculated based on a set of $156$ top players calculated by raw Z-score across the NBA 
+- Actual weekly performances are sampled for each player for each of $25$ weeks
 - The team with the best record wins (there are no playoffs)
-- Strategies are tested 10,000 times at each initial drafting position
+- Strategies are tested $10,000$ times at each initial drafting position
 
-The expected win rate, if all strategies are equally good, is $\frac{1}{12} = 8.33\\%$. Actual results are shown below
+The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
 
-https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/a7f56aea-dc05-4b0f-89df-9044c2275024
+|     | G-score vs 11 Z-score | Z-score vs. 11 G-score|
+| -------- | ------- |------- |
+| __9-Cat__    |  | |
+| 2021  | $15.9\\%$   | $1.5\\%$  |
+| 2022 | $14.3\\%$   | $1.3\\%$  |
+| 2023    | $21.7\\%$    | $0.4\\%$  |
+| Overall    | $17.3\\%$    | $1.4\\%$ |  
+| __8-Cat__    |  | |
+| 2021  | $10.7\\%$   | $2.9\\%$  |
+| 2022 | $12.0\\%$   | $1.5\\%$  |
+| 2023    | $15.4\\%$    | $0.9\\%$  |
+| Overall    | $12.7\\%$    | $1.8\\%$ |  
 
 When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that the assumption of randomness wasn't too problematic, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
+
+To confirm the intuition about why the G-score works, take a look at the win rates by category for the G-score drafter against 11 Z-score drafters in 9-Cat
+
+|     | G-score win rate | 
+| -------- | ------- |
+| Points  | $77.7\\%$   | 
+| Rebounds | $70.8\\%$   | 
+| Assists    | $81.6\\%$    | 
+| Steals    | $25.7\\%$    |  
+| Blocks  | $44.9\\%$   | 
+| Three-pointers | $77.3\\%$   | 
+| Turnovers    | $16.2\\%$    | 
+| Field goal %    | $34.9\\%$    | 
+| Free throw %    | $40.6\\%$    | 
+| Overall   | $52.2\\%$    | 
+
+The G-score drafter performs well in stable, high-volume categories like assists, and that makes up for lackluster performance in volatile categories like steals and turnovers. 
 
 Simulations also suggest that G-scores work better than Z-scores in the "Head-to-Head: Most Categories" format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores.
 
