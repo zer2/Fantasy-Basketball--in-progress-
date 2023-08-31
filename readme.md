@@ -5,7 +5,7 @@
 
 # Why I think Z-scores can be improved
 
-Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring'. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
+Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make numerical rankings of players. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
 
 However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they are suboptimal and inferior to an alternative scoring system that I call the G-score, at least in the head-to-head context. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
@@ -13,7 +13,7 @@ I realize that challenging Z-scores is fantasy heresy, and many will be skeptica
 
 ## 1.	What are Z-scores?
 
-You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) written as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) written as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. 
+You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) represented as $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) represented as $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$. 
 
 This transformation is useful because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, it makes sense to apply it to fantasy basketball, because all categories should be equally important despite having different scales. 
 
@@ -52,9 +52,9 @@ The proof will consider Z-scores in the context of the "Head-to-Head: Each Categ
 
 ### A. Assumptions and setup
 
-The case for Z-scores utilizes the simplifying assumption that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But a heuristic as elegant as Z-scores could not be derived without this kind of simplifying assumption. 
+The case for Z-scores utilizes the simplifying assumption that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But some kind of simplifying assumption is necessary to derive a tidy heuristic. And this is not a completely crazy one, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate. 
 
-Say team one is picking a player in a league with twelve players per team. Besides the unchosen player, they will have eleven other randomly chosen players. Their opponents will all have twelve randomly chosen players. With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
+For the sake of an example, let's imagine a league where teams have twelve players each. Say team one is about to choose their next player. Besides the unchosen player, they will have eleven other randomly chosen players. Their opponents will all have twelve randomly chosen players. With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
 
 ### B.	Category differences
 
@@ -134,14 +134,14 @@ $$
 
 I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result. 
 
-This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. The G-score idea just converts that intuition into a mathematical rigor
+This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. Why invest strongly in steals, when you will lose the category often anyway due to bad luck? The G-score idea just converts that intuition into a mathematical rigor
 
 ## 5.	Simulation results
 
-All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually would work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does compared to Z-score. 
+All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does compared to Z-score. 
 
 The code in this repository simulates fantasy basketball with the following parameters 
-- 12 teams compete, each with 13 players. The expected win rate is $\frac{1}{12} = 8.33\\%$
+- 12 teams compete, each with 13 players
 - The format is "Head-to-Head: Each Category"
 - Players are chosen in a snake draft
 - Teams consist of 2 C, 1 PG, 1 SG, 2 G, 1 SF, 1 PF, 2F, 3 Utility. All games played are counted
@@ -150,11 +150,11 @@ The code in this repository simulates fantasy basketball with the following para
 - The team with the best record wins (there are no playoffs)
 - Strategies are tested 10,000 times at each initial drafting position
 
-Results are shown below 
+The expected win rate, if all strategies are equally good, is $\frac{1}{12} = 8.33\\%$. Actual results are shown below
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/a7f56aea-dc05-4b0f-89df-9044c2275024
 
-When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that our logic makes sense, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
+When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that the assumption of randomness wasn't too problematic, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
 
 Simulations also suggest that G-scores work better than Z-scores in the "Head-to-Head: Most Categories" format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores.
 
@@ -170,5 +170,5 @@ This analysis has focused on the head-to-head formats. For completeness' sake, h
 
 Any situation-agnostic value quantification system is subptimal, since a truly optimal strategy would adapt to the circumstances of the draft/auction. 
 
-In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand how to incorporate punting. There is a lot of room for improvelemt and I hope that I, or someone else, can make a better version in the future! 
+In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand how to incorporate punting. There is a lot of room for improvement and I hope that I, or someone else, can make a better version in the future! 
 
