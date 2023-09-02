@@ -112,13 +112,7 @@ This seems like a compelling case for Z-scores as a heuristic. So what's my prob
 
 ## 3.The flaw of Z-scores
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. 
-
-How should we account for this? Well, consider the following two scenarios
-- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points across the week
-- You don't know if your opponent has Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$ points, Embiid will score $70$, and Doncic will score $80$
-  
-From your perspective, these two scenarios are the same. This suggests that we should be treating randomness across weeks in exactly the same way as we treated randomness across players. That is, we should be randomly sampling both players and weekly performances. 
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. We should have been randomly sampling both players and weekly performances. 
 
 Below, see how metrics for blocks change when we do so
 
@@ -128,7 +122,7 @@ Although the mean remains the same, the standard deviation is larger because it 
 
 ## 4.	Reformulating Z-scores 
 
-It stands to reason that the logic from section 2 can be improved by replacing $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$. For standard categories, this yields scores of 
+We can retrace our steps from section 2, except replacing $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$. For standard categories this yields scores of 
 
 $$
 \frac{m_p – m_\mu}{\sqrt{m_\sigma^2 + m_\tau^2}} 
@@ -142,7 +136,13 @@ $$
 
 I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result. 
 
-This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. Why invest strongly in steals, when you will lose the category often anyway due to bad luck? The G-score idea just converts that intuition into a mathematical rigor
+This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. Why invest strongly in steals, when you will lose the category often anyway due to bad luck? The G-score idea just converts that intuition into a mathematical rigor.
+
+It is easy to confirm that upon reflection, G-scores are more sensible than Z-scores. Consider the following two scenarios
+- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points across the week
+- You don't know if your opponent has Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$ points, Embiid will score $70$, and Doncic will score $80$
+  
+From your perspective, these two scenarios are the same. Therefore any sensible scoring system should treat player-to-player standard deviation and week-to-week standard deviation in the same way, which G-score does and Z-score does not
 
 ## 5.	Simulation results
 
