@@ -42,7 +42,9 @@ See below for an animation of weekly blocking numbers going through the Z-score 
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/5996da7a-a877-4db1-bb63-c25bed81415f
 
-The transformation looks similar for all the other categories. The sum of the resulting Z-scores from all of them is the aggregate Z-score, which provides an intuitive quantification of overall player value
+The transformation looks similar for all the other categories. 
+
+Adding up the results for all categories yields an aggregate Z-score, which provides an intuitive quantification of overall player value
 
 ## 2. Justifying Z-scores
 
@@ -52,9 +54,9 @@ The proof will consider Z-scores in the context of the "Head-to-Head: Each Categ
 
 ### A. Assumptions and setup
 
-The case for Z-scores utilizes the simplifying assumption that besides the player currently being chosen, all other players are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But some kind of simplifying assumption is necessary to derive a tidy heuristic. And this is not a completely crazy one, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate. 
+Z-scores can be derived by asking the question: **if team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose as their next player**? This question implicitly assumes that besides the player currently being chosen, all other players from both teams are selected randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But some kind of simplifying assumption is necessary to derive a tidy heuristic. And this is not a completely crazy one, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate. 
 
-For the sake of an example, let's imagine a league where teams have twelve players each. Say team one is about to choose their next player. Besides the unchosen player, they will have eleven other randomly chosen players. Their opponents will all have twelve randomly chosen players. With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
+Let's imagine a league where $N=12$ and team one is choosing a player. The assumptions tells us that team one has $11$ other randomly chosen players, and team two has $12$ randomly chosen players. With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
 
 ### B.	Category differences
 
@@ -62,11 +64,11 @@ The difference in category score between two teams tells us which team is winnin
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
-You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their average (or sum) always ends up looking a lot like a Bell curve. This means that differences for all categories will look like Bell curves
+You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their average (or sum) always ends up looking a lot like a Bell curve. Ergo if we ran this experiment for other categories, the results would also look like Bell curves
 
 ### C.	Properties of the category difference
 
-Bell curves are fully defined by their mean and standard deviation. That is to say, once we know a Bell curve's mean and standard deviation, we can calculate anything else about it.
+Bell curves are fully defined by their mean and standard deviation. That is to say, once we know a Bell curve's mean and standard deviation, we can calculate everything else about it.
 
 The mean and standard deviation of our Bell curves can be calculated via probability theory. Including the unchosen player with category average $m_p$
 - The mean is $m_\mu - m_p$
@@ -110,13 +112,19 @@ This seems like a compelling case for Z-scores as a heuristic. So what's my prob
 
 ## 3.The flaw of Z-scores
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. Randomly choosing weekly performances would have made the scenario more realistic. 
+Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. 
 
-Below, see how standard deviation changes for blocks when randomly selecting both player and performance
+How should we account for this? Well, consider the following two scenarios
+- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points across the week
+- You don't know if your opponent has Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$ points, Embiid will score $70$, and Doncic will score $80$
+  
+From your perspective, these two scenarios are the same. This suggests that we should be treating randomness across weeks in exactly the same way as we treated randomness across players. That is, we should be randomly sampling both players and weekly performances. 
+
+Below, see how metrics for blocks change when we do so
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
-Although the mean remains the same, the standard deviation is larger because it incorporates week-to-week variation. Note that it is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
+Although the mean remains the same, the standard deviation is larger because it incorporates an additional term for week-to-week variation. Note that the new standard deviation is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
 
 ## 4.	Reformulating Z-scores 
 
@@ -138,17 +146,17 @@ This matches with the way many fantasy players think about volatile categories l
 
 ## 5.	Simulation results
 
-All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does compared to Z-score. 
+All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does against Z-score. 
 
 The code in this repository simulates fantasy basketball with the following parameters 
 - $12$ teams compete, each with $13$ players
 - The format is "Head-to-Head: Each Category"
 - Players are chosen in a snake draft
-- Teams consist of $2$ C, $1$ PG, $1$ SG, $2$ G, $1$ SF, $1$ PF, $2$ F, $3$ Utility. All games played are counted
+- Teams consist of $2$ centers, $1$ point guard, $1$ shooting guard, $2$ guards, $1$ small forward, $1$ power forward, $2$ forwards, and $3$ utilities (wildcards). All games played are counted
 - All drafters pick the highest-ranking available player that could fit on their team, based on empirically correct rankings for the season
 - Coefficients for Z-scores and G-scores are calculated based on a set of $156$ top players calculated by raw Z-score across the NBA 
 - Actual weekly performances are sampled for each player for each of $25$ weeks
-- The team with the best record wins (there are no playoffs)
+- The team with the best record wins. There are no playoffs
 - Strategies are tested $10,000$ times at each initial drafting position
 
 The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
@@ -166,9 +174,9 @@ The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33
 | 2023    | $15.4\\%$    | $0.9\\%$  |
 | Overall    | $12.7\\%$    | $1.8\\%$ |  
 
-When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing will be much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that the assumption of randomness wasn't too problematic, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
+When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing is much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that the assumption of randomness wasn't too problematic, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
 
-To confirm the intuition about why the G-score works, take a look at its win rates by category against eleven Z-score drafters in 9-Cat
+To confirm the intuition about why the G-score works, take a look at its win rates by category against $11$ Z-score drafters in 9-Cat
 
 |     | G-score win rate | 
 | -------- | ------- |
@@ -183,7 +191,7 @@ To confirm the intuition about why the G-score works, take a look at its win rat
 | Free throw %    | $40.6\\%$    | 
 | Overall   | $52.2\\%$    | 
 
-The G-score drafter performs well in stable, high-volume categories like assists, and that makes up for lackluster performance in volatile categories like steals and turnovers. 
+The G-score drafter performs well in stable/high-volume categories like assists and poorly in volatile categories like turnovers, netting to an average win rate of slightly above $50\\%$. As expected, the marginal investment in stable categories is worth more than the corresponding underinvestment in volatile categories, since investment in stable categories leads to reliable wins and the volatile categories can be won despite underinvestment with sheer luck. 
 
 Simulations also suggest that G-scores work better than Z-scores in the "Head-to-Head: Most Categories" format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores.
 
@@ -199,5 +207,5 @@ This analysis has focused on the head-to-head formats. For completeness' sake, h
 
 Any situation-agnostic value quantification system is subptimal, since a truly optimal strategy would adapt to the circumstances of the draft/auction. 
 
-In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand how to incorporate punting. There is a lot of room for improvement and I hope that I, or someone else, can make a better version in the future! 
+In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand the consequences of punting. There is a lot of room for improvement and I hope that I, or someone else, can make a better version in the future! 
 
