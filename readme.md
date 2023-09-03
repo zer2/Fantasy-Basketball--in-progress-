@@ -3,15 +3,13 @@
 - [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
 - [*Snake vs auction drafts*](https://www.dummies.com/article/home-auto-hobbies/sports-recreation/fantasy-sports/fantasy-football/understanding-fantasy-football-snake-and-auction-drafts-149492/)
 
-# Z-scores are great- but not the best for H2H
+# Improving Z-scores for H2H fantasy
 
-Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make objective rankings of players. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
-
-As far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
+Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make objective rankings of players. However, as far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
 
 I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the Rotisserie format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
-I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It defines Z-scores precisely, presents a logical argument for their use in Rotisserie, then presents a modified argument for head-to-head to derive G-scores
+I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow
 
 ## 1.	What are Z-scores?
 
@@ -48,16 +46,16 @@ The transformation looks similar for all the other categories. Adding up the res
 
 ## 2. Justifying Z-scores for Rotisserie
 
-It is effectively impossible to calculate a truly optimal solution for Rotisserie or any other format, since they are so complex. However, if we make some simplifications, we can demonstrate that Z-scores are a reasonable heuristic
+It is impractical to calculate a truly optimal solution for Rotisserie or any other format, since they are so complex. However, if we make some simplifications, we can demonstrate that Z-scores are a reasonable heuristic
 
 ### A. Assumptions and setup
 
-We start by simplifying the problem in a few ways
-- We ignore position requirements, waiver wires, injury slots, etc. Drafters run with their drafted players the whole season
-- The objective is to maximize the expected value of the number of categories won against an arbitrary opponent in a single week, where all players perform at their long-term means. Note that this translates to optimizing for overall score at the end of the season, since having higher weekly means than another team leads to victory in the category and an additional point to overall score
-- Besides the player being drafted, all others are chosen randomly from a pool of top players. This assumption is obviously not exactly true. However, it is not completely crazy either, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate
+First, the problem must be simplified in a few ways
+- Position requirements, waiver wires, injury slots, etc. are ignored. Drafters use their drafted players the whole season
+- The goal is simplified to maximizing the expected value of the number of categories won against an arbitrary opponent in a single week, where all players perform at their season-long means. Note that this is the same thing as maximizing overall score at the end of the season, since having higher weekly means than another team leads to victory in the category and an additional point to overall score
+- Besides the player being drafted, all others are assumed to be chosen randomly from a pool of top players. This assumption is obviously not exactly true. However, it is not completely crazy either, since all teams will have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate
 
-After these simplifications, we can pose the problem as: **if team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose as their next player to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**? This question is quite solvable by calculating the expected number of category wins for team one based on the statistics of the player they are choosing, then optimizing it. 
+After these simplifications, the problem can be posed as: **if team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose next to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**? This question is quite solvable by calculating the expected number of category wins for team one based on the statistics of the player they are choosing, then optimizing it. 
 
 The calculation starts by analyzing the difference in category score between two teams
 
@@ -67,13 +65,13 @@ The difference in category score between two teams tells us which team is winnin
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
-You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their sum always ends up looking a lot like a Bell curve. Ergo if we ran this experiment for other categories, the results would also look like Bell curves
+You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their sum always ends up looking a lot like a Bell curve. Ergo if this experiment was run for other categories, the results would also look like Bell curves
 
 ### C.	Properties of the category difference
 
 Bell curves are fully defined by their mean and standard deviation. That is to say, once we know a Bell curve's mean and standard deviation, we can calculate everything else about it.
 
-The mean and standard deviation of our Bell curves can be calculated via probability theory. Including the unchosen player with category average $m_p$
+The mean and standard deviation of the Bell curves for category differences can be calculated via probability theory. Including the unchosen player with category average $m_p$
 - The mean is $m_\mu - m_p$
 - The standard deviation is $\sqrt{23} * m_\sigma$ (The square root in the formula comes from the fact that $STD(X + Y) = \sqrt{STD(X)^2 + STD(Y)^2}$ where $STD(X)$ is the standard deviation of $X$)
 
@@ -109,21 +107,21 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_{p,c} \right]
 $$
 
-We can see that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that the higher a player's total Z-score is, the better they are for Rotisserie, at least under the assumptions we have made
+It is clear that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that under the aforementioned assumptions, the higher a player's total Z-score is, the better they are for Rotisserie
 
 ## 3. Modifying assumptions for Head-to-Head
 
-For head-to-head, our simplified objective is to win as many categories as possible in an arbitrary matchup against an unknown opponent. This is quite similar to the setup for *Rotisserie*, with one key difference: we can't assume beforehand that players will perform at their long-term means. Instead of only randomly choosing players, we need to randomly choose a player and their performance for the week. 
+Head-to-head also requires a simplified objective, which is winning as many categories as possible in an arbitrary matchup against an unknown opponent. This is quite similar to the setup for *Rotisserie*, with one key difference: it cannot be assumed beforehand that players will perform at their season-term means, since head-to-head is truly weekly and not aggregated actross an entire season. Weekly performances must be randomly sampled, in addition to players. 
 
-Below, see how metrics for blocks change when we do so
+Below, see how metrics for blocks change when we do that kind of sampling
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
 Although the mean remains the same, the standard deviation is larger because it incorporates an additional term for week-to-week variation. Note that the new standard deviation is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
 
-## 4.	Reformulating Z-scores 
+## 4.	Formulating G-scores 
 
-We can retrace our steps from section 2, except replacing $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$. For standard categories this yields scores of 
+The logic from section 2 can be repeated, except replacing $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$. For standard categories this yields scores of 
 
 $$
 \frac{m_p – m_\mu}{\sqrt{m_\sigma^2 + m_\tau^2}} 
