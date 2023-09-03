@@ -5,7 +5,7 @@
 
 # Improving Z-scores for H2H fantasy
 
-Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make objective rankings of players. However, as far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
+Fantasy basketball has a standard way of quantifying player value across categories, called 'Z-scoring', and it is used to make objective rankings of players. However, as far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
 
 I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the Rotisserie format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
@@ -15,7 +15,7 @@ I realize that challenging Z-scores is fantasy heresy, and many will be skeptica
 
 You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) signified by $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) signified by $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$
 
-This transformation is useful because it takes a set of numbers that could have any scale and remakes them into a new set closely centered around zero. Intuitively, it makes sense to apply it to fantasy basketball, because all categories should be equally important despite having different scales. 
+The transformed set of numbers always has $\mu = 0$ and $\sigma = 1$. Intuitively, it makes sense to apply it to fantasy basketball, because all categories should be comparably important despite having different scales. 
 
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
 -	The percentage categories are adjusted by volume. This is necessary because players who shoot more matter more; if a team has one player who goes $9$ for $9$ ($100\\%$) and another who goes $0$ for $1$ ($0\\%$) their aggregate average is $90\\%$ rather than $50\\%$. The fix is to multiply scores by the player's volume, relative to average volume
