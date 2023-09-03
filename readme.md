@@ -113,15 +113,7 @@ We can see that the expected number of category victories is directly proportion
 
 ## 3. Modifying assumptions for Head-to-Head
 
-Next we optimize for "Head-to-Head: Each Category." It is much simpler to analyze than the other head-to-head format, "Most Categories"
-
-We can re-use most of the proof from the last section, except that there is one crucial difference. Where we could fairly assume that players would perform at their long-term means for the week in Rotisserie, the same assumption cannot necessarily be made for head-to-head formats. We don't know what weekly performances are going to be, so we should be sampling them in addition to randomly sampling players.
-
-If this feels unintuitive to you, consider the following two scenarios 
-- Your opponent has one of Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$, Embiid will score $70$, and Doncic will score $80$
-- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points this week
-
-From the perspective of trying to win a head-to-head match, these two scenarios are exactly the same! It stands to reason that if we are sampling players, we should be sampling their performances too
+For head-to-head, our simplified objective is to win as many categories as possible in an arbitrary matchup against an unknown opponent. This is quite similar to the setup for *Rotisserie*, with one key difference: we can't assume beforehand that players will perform at their long-term means. Instead of only randomly choosing players, we need to randomly choose a player and their performance for the week. 
 
 Below, see how metrics for blocks change when we do so
 
@@ -149,20 +141,11 @@ This matches with the way many fantasy players think about volatile categories l
   
 ## 5.	Head-to-head simulation results
 
-All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual head-to-head drafts and see how G-score does against Z-score. 
+Our logic relies on many assumptions, so we can't be sure that G-scores work in practice. What we can do is simulate actual head-to-head drafts and see how G-score does against Z-score. 
 
-The code in this repository simulates fantasy basketball with the following parameters 
-- $12$ teams compete, each with $13$ players
-- The format is "Head-to-Head: Each Category"
-- Players are chosen in a snake draft
-- Teams consist of $2$ centers, $1$ point guard, $1$ shooting guard, $2$ guards, $1$ small forward, $1$ power forward, $2$ forwards, and $3$ utilities (wildcards). All games played are counted
-- All drafters pick the highest-ranking available player that could fit on their team, based on empirically correct rankings for the season
-- Coefficients for Z-scores and G-scores are calculated based on a set of $156$ top players calculated by raw Z-score across the NBA 
-- Actual weekly performances are sampled for each player for each of $25$ weeks
-- The team with the best record wins. There are no playoffs
-- Strategies are tested $10,000$ times at each initial drafting position
+The code in this repository simulates a simplistic version of head-to-head fantasy basketball, via a $12$ team snake draft. It doesn't include advanced strategies like using the waiver wire or punting categories, but for the most part it should be similar to real fantasy. For more detail, check out the code or the paper. 
 
-The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
+The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for "Head-to-Head: Each Category" 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
 
 |     | G-score vs 11 Z-score | Z-score vs. 11 G-score|
 | -------- | ------- |------- |
@@ -177,7 +160,7 @@ The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33
 | 2023    | $15.4\\%$    | $0.9\\%$  |
 | Overall    | $12.7\\%$    | $1.8\\%$ |  
 
-When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. The real thing is much more complicated due to uncertainties about long-term means for players, waiver wire moves, and more advanced strategies like punting. We can't expect the G-score to do this well in real life. Still, the dominance displayed by G-scores in the simulations is evidence that the assumption of randomness wasn't too problematic, and the G-score modification really is appropriate for "Head-to-Head: Each Category".
+When interpreting these results, it is important to remember that they are for an idealized version of fantasy basketball. Still, the dominance displayed by G-scores in the simulations suggests that the G-score modification really is appropriate.
 
 To confirm the intuition about why the G-score works, take a look at its win rates by category against $11$ Z-score drafters in 9-Cat
 
