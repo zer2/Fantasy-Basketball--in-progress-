@@ -11,7 +11,7 @@ As far as I know, nobody has ever laid out exactly why Z-scores should work. The
 
 I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the Rotisserie format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
-I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It defines Z-scores precisely, presents a logical argument for their use in Rotisserie, then presents a modified argument for head-to-head to derive G-scores.
+I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It defines Z-scores precisely, presents a logical argument for their use in Rotisserie, then presents a modified argument for head-to-head to derive G-scores
 
 ## 1.	What are Z-scores?
 
@@ -48,23 +48,22 @@ The transformation looks similar for all the other categories. Adding up the res
 
 ## 2. Justifying Z-scores for Rotisserie
 
+It is effectively impossible to calculate a truly optimal solution for Rotisserie or any other format, since they are so complex. However, if we make some simplifications, we can demonstrate that Z-scores are a reasonable heuristic
+
 ### A. Assumptions and setup
 
-Deriving a truly optimal strategy for fantasy basketball is effectively impossible; the game is far too complex. Instead, we need to simplify the game and then come up with a heuristic. 
+We start by simplifying the problem in a few ways
+- We ignore position requirements, waiver wires, injury slots, etc. Drafters run with their drafted players the whole season
+- The objective is to maximize the expected value of the number of categories won against an arbitrary opponent in a single week, where all players perform at their long-term means. Note that this translates to optimizing for overall score at the end of the season, since having higher weekly means than another team leads to victory in the category and an additional point to overall score
+- Besides the player being drafted, all others are chosen randomly from a pool of top players. This assumption is obviously not exactly true. However, it is not completely crazy either, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate
 
-In Rotisserie, you get one point for each team you beat in each category. The real objective is to score more points than any other drafter, but we can simplify that to trying to score as many points as possible. Another way of phrasing the simplified objective is that against an arbitrary opponent, you want to have the highest possible expected number of category victories. Winning a category requires having a superior value across the entire season. This is equivalent to having a superior average weekly value, which corresponds to our definitions of Z-scores, so we can analyze that instead. This simplifies the problem to trying to win as many categories as possible in a single week against an arbitrary opponent, where all players perform at their long-term averages. 
+After these simplifications, we can pose the problem as: **if team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose as their next player to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**? This question is quite solvable by calculating the expected number of category wins for team one based on the statistics of the player they are choosing, then optimizing it. 
 
-Secondly, we assume that all players besides a single one in question are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. However, it is not completely crazy either, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate. 
-
-Now we can phrase the problem more formally. **If team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose as their next player to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**? 
-
-It helps to think through a concrete example. Let's imagine a league where $N=12$ and team one is choosing a player. The assumptions tells us that team one has $11$ other randomly chosen players, and team two has $12$ randomly chosen players. 
-
-With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
+The calculation starts by analyzing the difference in category score between two teams
 
 ### B.	Category differences
 
-The difference in category score between two teams tells us which team is winning the category and by how much. By randomly selecting the $23$ random players many times, we can get a sense of what team two's score minus team one's score will be before the last player is added. See this simulation being carried out for blocks below
+The difference in category score between two teams tells us which team is winning the category and by how much. By randomly selecting the $2N -1$ random players many times, we can get a sense of what team two's score minus team one's score will be before the last player is added. See this simulation being carried out for blocks below with $N=12$
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
@@ -110,13 +109,19 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_{p,c} \right]
 $$
 
-We can see that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that the higher a player's total Z-score is, the better they are for fantasy, at least under the assumptions we have made. That's a decemt case for using Z-scores!
+We can see that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that the higher a player's total Z-score is, the better they are for Rotisserie, at least under the assumptions we have made
 
 ## 3. Modifying assumptions for Head-to-Head
 
-Let's look into the optimal metric for "Head-to-Head: Each Category." It is much simpler to analyze than the other head-to-head format, "Most Categories"
+Next we optimize for "Head-to-Head: Each Category." It is much simpler to analyze than the other head-to-head format, "Most Categories"
 
 We can re-use most of the proof from the last section, except that there is one crucial difference. Where we could fairly assume that players would perform at their long-term means for the week in Rotisserie, the same assumption cannot necessarily be made for head-to-head formats. We don't know what weekly performances are going to be, so we should be sampling them in addition to randomly sampling players.
+
+If this feels unintuitive to you, consider the following two scenarios 
+- Your opponent has one of Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$, Embiid will score $70$, and Doncic will score $80$
+- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points this week
+
+From the perspective of trying to win a head-to-head match, these two scenarios are exactly the same! It stands to reason that if we are sampling players, we should be sampling their performances too
 
 Below, see how metrics for blocks change when we do so
 
@@ -144,7 +149,7 @@ This matches with the way many fantasy players think about volatile categories l
   
 ## 5.	Head-to-head simulation results
 
-All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does against Z-score. 
+All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual head-to-head drafts and see how G-score does against Z-score. 
 
 The code in this repository simulates fantasy basketball with the following parameters 
 - $12$ teams compete, each with $13$ players
