@@ -15,11 +15,9 @@ I realize that challenging Z-scores is fantasy heresy, and many will be skeptica
 
 You may have come across Z-scores in a stats 101 class. In that context, they are what happens to a set of numbers after subtracting the mean (average) signified by $\mu$ and dividing by the standard deviation (how “spread out” the distribution is) signified by $\sigma$. Mathematically, $Z(x) = \frac{x - \mu}{\sigma}$
 
-The transformed set of numbers always has $\mu = 0$ and $\sigma = 1$. Intuitively, it makes sense to apply it to fantasy basketball, because all categories should be comparably important despite having different scales. 
-
 For use in fantasy basketball, a few modifications are made to basic Z-scores 
 -	The percentage categories are adjusted by volume. This is necessary because players who shoot more matter more; if a team has one player who goes $9$ for $9$ ($100\\%$) and another who goes $0$ for $1$ ($0\\%$) their aggregate average is $90\\%$ rather than $50\\%$. The fix is to multiply scores by the player's volume, relative to average volume
--	$\mu$ and $\sigma$ are calculated based on the $\approx 150$ players expected to be on fantasy rosters, rather than the entire NBA
+-	$\mu$ and $\sigma$ are calculated based on the $\approx 156$ players expected to be on fantasy rosters, rather than the entire NBA
   
 Denoting
 - Player $p$'s weekly average as $m_p$ 
@@ -42,7 +40,7 @@ See below for an animation of weekly blocking numbers going through the Z-score 
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/5996da7a-a877-4db1-bb63-c25bed81415f
 
-The transformation looks similar for all the other categories. Adding up the results for all categories yields an aggregate Z-score, which provides an intuitive quantification of overall player value
+Adding up the results for all categories yields an aggregate Z-score
 
 ## 2. Justifying Z-scores for Rotisserie
 
@@ -183,7 +181,7 @@ Another possible use-case is auctions. There is a well-known procedure for trans
 
 ## Addendum: Further improvement 
 
-Any situation-agnostic value quantification system is subptimal, since a truly optimal strategy would adapt to the circumstances of the draft/auction. 
+Any situation-agnostic value quantification system is suboptimal, since a truly optimal strategy would adapt to the circumstances of the draft/auction. 
 
-In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand the consequences of punting. There is a lot of room for improvement and I hope that I, or someone else, can make a better version in the future! 
+In the paper, I outline a methodology called H-scoring that dynamically chooses players based on the drafting situation. It performs significantly better than going straight off G-score and Z-score. However, it is far from perfect, particularly because it does not fully understand the consequences of punting. There is a lot of room for improvement, and I hope that I, or someone else, can make a better version in the future! 
 
