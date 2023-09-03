@@ -3,13 +3,15 @@
 - [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
 - [*Snake vs auction drafts*](https://www.dummies.com/article/home-auto-hobbies/sports-recreation/fantasy-sports/fantasy-football/understanding-fantasy-football-snake-and-auction-drafts-149492/)
 
-# Why I think Z-scores can be improved
+# Z-scores are great- but not always the best 
 
 Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make objective rankings of players. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
 
-However, just because something is standard does not mean that it is correct. I believe that while Z-scores are a sensible heuristic, they do not work as well as an alternative that I call "G-scores", at least in the head-to-head context. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
+As far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
 
-I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It defines Z-scores precisely, presents a logical argument for their use, then refines the argument to derive G-scores
+I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the Rotisserie format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
+
+I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow. It defines Z-scores precisely, presents a logical argument for their use in Rotisserie, then presents a modified argument for head-to-head to derive G-scores.
 
 ## 1.	What are Z-scores?
 
@@ -22,9 +24,9 @@ For use in fantasy basketball, a few modifications are made to basic Z-scores
 -	$\mu$ and $\sigma$ are calculated based on the $\approx 150$ players expected to be on fantasy rosters, rather than the entire NBA
   
 Denoting
-- Player $p$'s average as $m_p$ 
-- $\mu$ across players expected to be on fantasy rosters as $m_\mu$
-- $\sigma$ across players expected to be on fantasy rosters as $m_\sigma$ 
+- Player $p$'s weekly average as $m_p$ 
+- $\mu$ of $m_p$ across players expected to be on fantasy rosters as $m_\mu$
+- $\sigma$ of $m_p$ across players expected to be on fantasy rosters as $m_\sigma$ 
 
 Z-scores for standard categories (points, rebounds, assists, steals, blocks, three-pointers, and sometimes turnovers) are  
 
@@ -42,21 +44,23 @@ See below for an animation of weekly blocking numbers going through the Z-score 
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/5996da7a-a877-4db1-bb63-c25bed81415f
 
-The transformation looks similar for all the other categories. 
+The transformation looks similar for all the other categories. Adding up the results for all categories yields an aggregate Z-score, which provides an intuitive quantification of overall player value
 
-Adding up the results for all categories yields an aggregate Z-score, which provides an intuitive quantification of overall player value
-
-## 2. Justifying Z-scores
-
-As I said before, I think Z-scores are suboptimal. But there is a sense in which they do work, and before getting into their flaws, it is helpful to understand the positive case for them.
-
-The proof will consider Z-scores in the context of the "Head-to-Head: Each Category" format, because it is relatively easy to analyze compared to the other head-to-head format, "Most Categories"
+## 2. Justifying Z-scores for Rotisserie
 
 ### A. Assumptions and setup
 
-Z-scores can be derived by asking the question: **if team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose as their next player**? This question implicitly assumes that besides the player currently being chosen, all other players from both teams are selected randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. But some kind of simplifying assumption is necessary to derive a tidy heuristic. And this is not a completely crazy one, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate. 
+Deriving a truly optimal strategy for fantasy basketball is effectively impossible; the game is far too complex. Instead, we need to simplify the game and then come up with a heuristic. 
 
-Let's imagine a league where $N=12$ and team one is choosing a player. The assumptions tells us that team one has $11$ other randomly chosen players, and team two has $12$ randomly chosen players. With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
+In Rotisserie, you get one point for each team you beat in each category. The real objective is to score more points than any other drafter, but we can simplify that to trying to score as many points as possible. Another way of phrasing the simplified objective is that against an arbitrary opponent, you want to have the highest possible expected number of category victories. Winning a category requires having a superior value across the entire season. This is equivalent to having a superior average weekly value, which corresponds to our definitions of Z-scores, so we can analyze that instead. This simplifies the problem to trying to win as many categories as possible in a single week against an arbitrary opponent, where all players perform at their long-term averages. 
+
+Secondly, we assume that all players besides a single one in question are chosen randomly from a pool of high-performing players. This assumption is obviously not exactly true, since drafters are trying to take the strongest players available, not choosing at random. However, it is not completely crazy either, since all teams will always have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate. 
+
+Now we can phrase the problem more formally. **If team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose as their next player to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**? 
+
+It helps to think through a concrete example. Let's imagine a league where $N=12$ and team one is choosing a player. The assumptions tells us that team one has $11$ other randomly chosen players, and team two has $12$ randomly chosen players. 
+
+With all of this information, we can brute-force calculate the probability that team one wins based on the statistics of the player they are choosing, and try to optimize for it
 
 ### B.	Category differences
 
@@ -64,7 +68,7 @@ The difference in category score between two teams tells us which team is winnin
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
-You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their average (or sum) always ends up looking a lot like a Bell curve. Ergo if we ran this experiment for other categories, the results would also look like Bell curves
+You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their sum always ends up looking a lot like a Bell curve. Ergo if we ran this experiment for other categories, the results would also look like Bell curves
 
 ### C.	Properties of the category difference
 
@@ -106,15 +110,19 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_{p,c} \right]
 $$
 
-We can see that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that the higher a player's total Z-score is, the better they are for fantasy, at least under the assumptions we have made. 
+We can see that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that the higher a player's total Z-score is, the better they are for fantasy, at least under the assumptions we have made. That's a decemt case for using Z-scores!
 
-This seems like a compelling case for Z-scores as a heuristic. So what's my problem with them?
+## 3. Modifying assumptions for Head-to-Head
 
-## 3.The flaw of Z-scores
+Let's look into the optimal metric for "Head-to-Head: Each Category." It is much simpler to analyze than the other head-to-head format, "Most Categories"
 
-Sneakily, the previous section relied on the assumption that each player would score a pre-determined amount in each category. That's not the case at all in reality- head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. We should have been randomly sampling both players and weekly performances. 
+We can re-use most of the proof from the last section, except that there is one crucial difference. Where we could fairly assume that players would perform at their long-term means for the week in Rotisserie, the same assumption cannot necessarily be made for head-to-head formats. Head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. 
 
-Below, see how metrics for blocks change when we do so
+We don't know weekly performances, so how should we treat them? Well, consider the following two scenarios 
+- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points across the week
+- You don't know if your opponent has Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$ points, Embiid will score $70$, and Doncic will score $80$
+
+From your perspective, these two scenarios are exactly the same. This suggests that we should be treating randomness across weeks in exactly the same way as we treated randomness across players, and sample for both of them. Below, see how metrics for blocks change when we do so
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
@@ -136,15 +144,9 @@ $$
 
 I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result. 
 
-This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. Why invest strongly in steals, when you will lose the category often anyway due to bad luck? The G-score idea just converts that intuition into a mathematical rigor.
-
-It is easy to confirm that upon reflection, G-scores are more sensible than Z-scores. Consider the following two scenarios
-- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points across the week
-- You don't know if your opponent has Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$ points, Embiid will score $70$, and Doncic will score $80$
+This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. Why invest strongly in steals, when you will lose the category often anyway due to bad luck? The G-score idea just converts that intuition into a mathematical rigor
   
-From your perspective, these two scenarios are the same. Therefore any sensible scoring system should treat player-to-player standard deviation and week-to-week standard deviation in the same way, which G-score does and Z-score does not
-
-## 5.	Simulation results
+## 5.	Head-to-head simulation results
 
 All of our logic has relied on the simplifying assumption that other drafters are picking players randomly, which is definitely innacurate. We can't take it for granted that G-scores actually work when that assumption is removed. We can, however, simulate actual drafts and see how G-score does against Z-score. 
 
@@ -195,15 +197,9 @@ The G-score drafter performs well in stable/high-volume categories like assists 
 
 Simulations also suggest that G-scores work better than Z-scores in the "Head-to-Head: Most Categories" format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores.
 
-Another possible use-case is auctions. There is a well-known procedure for translating player value to auction value, outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393). If the auction is for a head-to-head format, it is reasonable to use G-scores to quantify value rather than Z-scores
+Another possible use-case is auctions. There is a well-known procedure for translating player value to auction value, outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393). If the auction is for a head-to-head format, it is reasonable to use G-scores to quantify value rather than Z-scores 
 
-## Addendum 1 : Other formats  
-
-This analysis has focused on the head-to-head formats. For completeness' sake, here are my thoughts on why there are no implications for other formats 
-- "Rotisserie": Since Rotisserie uses full-season scores, week-to-week variance is irrelevant and Z-scores still make sense
-- "Head-to-Head: Points"/"Season Points": Points leagues don't use category scoring, so neither Z-scores nor G-scores are applicable 
-
-## Addendum 2: Further improvement 
+## Addendum: Further improvement 
 
 Any situation-agnostic value quantification system is subptimal, since a truly optimal strategy would adapt to the circumstances of the draft/auction. 
 
