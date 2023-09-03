@@ -3,7 +3,7 @@
 - [*Scoring formats*](https://support.espn.com/hc/en-us/articles/360003913972-Scoring-Formats)
 - [*Snake vs auction drafts*](https://www.dummies.com/article/home-auto-hobbies/sports-recreation/fantasy-sports/fantasy-football/understanding-fantasy-football-snake-and-auction-drafts-149492/)
 
-# Z-scores are great- but not always the best 
+# Z-scores are great- but not the best for H2H
 
 Quantifying player value across multiple categories is tricky, since it is not immediately obvious how much e.g. a block is worth relative to a steal. There is a standard way to do this, called 'Z-scoring', and it is used to make objective rankings of players. Many drafters who are inexperienced or don’t have the time to do their own research rely exclusively on Z-score rankings, and many others use them as a starting point for more complex strategies. 
 
@@ -116,13 +116,9 @@ We can see that the expected number of category victories is directly proportion
 
 Let's look into the optimal metric for "Head-to-Head: Each Category." It is much simpler to analyze than the other head-to-head format, "Most Categories"
 
-We can re-use most of the proof from the last section, except that there is one crucial difference. Where we could fairly assume that players would perform at their long-term means for the week in Rotisserie, the same assumption cannot necessarily be made for head-to-head formats. Head-to-head matchups are weekly affairs, and performances can vary significantly from one week to the next. 
+We can re-use most of the proof from the last section, except that there is one crucial difference. Where we could fairly assume that players would perform at their long-term means for the week in Rotisserie, the same assumption cannot necessarily be made for head-to-head formats. We don't know what weekly performances are going to be, so we should be sampling them in addition to randomly sampling players.
 
-We don't know weekly performances, so how should we treat them? Well, consider the following two scenarios 
-- Your opponent has Joel Embiid. He will score either $60$, $70$, or $80$ points across the week
-- You don't know if your opponent has Jayson Tatum, Joel Embiid, or Luka Doncic. Tatum will score $60$ points, Embiid will score $70$, and Doncic will score $80$
-
-From your perspective, these two scenarios are exactly the same. This suggests that we should be treating randomness across weeks in exactly the same way as we treated randomness across players, and sample for both of them. Below, see how metrics for blocks change when we do so
+Below, see how metrics for blocks change when we do so
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
