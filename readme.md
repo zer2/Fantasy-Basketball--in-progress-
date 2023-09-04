@@ -7,9 +7,9 @@
 
 Fantasy basketball has a standard way of quantifying player value across categories, called 'Z-scoring', and it is used to make objective rankings of players. However, as far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
 
-I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the Rotisserie format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
+I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the *Rotisserie* format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
 
-I realize that challenging Z-scores is fantasy heresy, and many will be skeptical. I also realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow
+I realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow
 
 ## 1.	What are Z-scores?
 
@@ -44,18 +44,18 @@ Adding up the results for all categories yields an aggregate Z-score
 
 ## 2. Justifying Z-scores for Rotisserie
 
-It is impractical to calculate a truly optimal solution for Rotisserie or any other format, since they are so complex. However, if we make some simplifications, we can demonstrate that Z-scores are a reasonable heuristic
+It is impractical to calculate a truly optimal solution for *Rotisserie* or any other format, since they are so complex. However, if we simplify the format, we can at least demonstrate that Z-scores are a reasonable heuristic
 
 ### A. Assumptions and setup
 
-First, the problem must be simplified in a few ways
-- Position requirements, waiver wires, injury slots, etc. are ignored. Drafters use their drafted players the whole season
-- The goal is simplified to maximizing the expected value of the number of categories won against an arbitrary opponent in a single week, where all players perform at their season-long means. Note that this is the same thing as maximizing overall score at the end of the season, since having higher weekly means than another team leads to victory in the category and an additional point to overall score
+Consider this problem: **Team one has $N-1$ players randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool. Which final player should the first team choose to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**?
+
+This problem statement makes a few implicit simplifications about *Rotisserie* drafts 
+- The goal is to maximize the expected value of the number of categories won against an arbitrary opponent in a single week, where all players perform at their season-long means. Using weekly means instead of season-long totals is just a convenience, to align with the definition of Z-scores. And optimizing for victory against an arbitrary opponent is equivalent to optimizing for total score at the end of a season, since each category victory over any opponent is worth one point 
 - Besides the player being drafted, all others are assumed to be chosen randomly from a pool of top players. This assumption is obviously not exactly true. However, it is not completely crazy either, since all teams will have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate
+- Position requirements, waiver wires, injury slots, etc. are ignored. Drafters use their drafted players the whole season
 
-After these simplifications, the problem can be posed as: **if team one has $N-1$ players, randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool, which player should the first team choose next to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**? This question is quite solvable by calculating the expected number of category wins for team one based on the statistics of the player they are choosing, then optimizing it. 
-
-The calculation starts by analyzing the difference in category score between two teams
+Based on these simplifications and the statistics of the player that team one is choosing, the objective can be calculated precisely
 
 ### B.	Category differences
 
@@ -63,11 +63,9 @@ The difference in category score between two teams tells us which team is winnin
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/73c3acaa-20c9-4a61-907a-ee0de2ff7e3b
 
-You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their sum always ends up looking a lot like a Bell curve. Ergo if this experiment was run for other categories, the results would also look like Bell curves
+You may notice that the result looks a lot like a Bell curve even though the raw block numbers look nothing like a Bell curve. This happens because of the surprising "Central Limit Theorem", which says that when adding a bunch of random numbers together, their sum always ends up looking a lot like a Bell curve. This applies to all the other categories as well
 
 ### C.	Properties of the category difference
-
-Bell curves are fully defined by their mean and standard deviation. That is to say, once we know a Bell curve's mean and standard deviation, we can calculate everything else about it.
 
 The mean and standard deviation of the Bell curves for category differences can be calculated via probability theory. Including the unchosen player with category average $m_p$
 - The mean is $m_\mu - m_p$
@@ -105,13 +103,13 @@ $$
 \frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_{p,c} \right]
 $$
 
-It is clear that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that under the aforementioned assumptions, the higher a player's total Z-score is, the better they are for Rotisserie
+It is clear that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that under the aforementioned assumptions, the higher a player's total Z-score is, the better they are for *Rotisserie*
 
 ## 3. Modifying assumptions for Head-to-Head
 
-Head-to-head also requires a simplified objective, which is winning as many categories as possible in an arbitrary matchup against an unknown opponent. This is quite similar to the setup for *Rotisserie*, with one key difference: it cannot be assumed beforehand that players will perform at their season-term means, since head-to-head is truly weekly and not aggregated actross an entire season. Weekly performances must be randomly sampled, in addition to players. 
+Head-to-head also requires a simplified problem statement, which is:  **Team one has $N-1$ players randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool. Which final player should team one choose to optimize the expected value of categories won against team two in a weekly matchup**? This is quite similar to the setup for *Rotisserie*, with one key difference: it is not assumed beforehand that players will perform at their season-term means, since head-to-head matchups are weekly and not aggregated actross an entire season. Weekly performances must be randomly sampled, in addition to players. 
 
-Below, see how metrics for blocks change when we do that kind of sampling
+Below, see how metrics for blocks change when sampled in this way
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
@@ -133,7 +131,7 @@ $$
 
 I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result. 
 
-This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. Why invest strongly in steals, when you will lose the category often anyway due to bad luck? The G-score idea just converts that intuition into a mathematical rigor
+This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. The G-score idea just converts that intuition into a mathematical rigor
   
 ## 5.	Head-to-head simulation results
 
@@ -141,7 +139,7 @@ Our logic relies on many assumptions, so we can't be sure that G-scores work in 
 
 The code in this repository simulates a simplistic version of head-to-head fantasy basketball, via a $12$ team snake draft. It doesn't include advanced strategies like using the waiver wire or punting categories, but for the most part it should be similar to real fantasy. For more detail, check out the code or the paper. 
 
-The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for "Head-to-Head: Each Category" 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
+The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for *Head-to-Head: Each Category* 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
 
 |     | G-score vs 11 Z-score | Z-score vs. 11 G-score|
 | -------- | ------- |------- |
@@ -175,7 +173,7 @@ To confirm the intuition about why the G-score works, take a look at its win rat
 
 The G-score drafter performs well in stable/high-volume categories like assists and poorly in volatile categories like turnovers, netting to an average win rate of slightly above $50\\%$. As expected, the marginal investment in stable categories is worth more than the corresponding underinvestment in volatile categories, since investment in stable categories leads to reliable wins and the volatile categories can be won despite underinvestment with sheer luck. 
 
-Simulations also suggest that G-scores work better than Z-scores in the "Head-to-Head: Most Categories" format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. Still, it stands to reason that if you want to optimize over a subset of categories for "turtling" or "punting", it makes sense to quantify value with a subset of category G-scores rather than Z-scores.
+Simulations also suggest that G-scores work better than Z-scores in the *Head-to-Head: Most Categories* format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. 
 
 Another possible use-case is auctions. There is a well-known procedure for translating player value to auction value, outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393). If the auction is for a head-to-head format, it is reasonable to use G-scores to quantify value rather than Z-scores 
 
