@@ -44,18 +44,18 @@ Adding up the results for all categories yields an aggregate Z-score
 
 ## 2. Justifying Z-scores for Rotisserie
 
-It is impractical to calculate a truly optimal solution for *Rotisserie* or any other format, since they are so complex. However, if we simplify the format, we can at least demonstrate that Z-scores are a reasonable heuristic
+It is impractical to calculate a truly optimal solution for *Rotisserie* or any other format, since they are so complex. However, if we simplify the *Rotisserie* format, we can at least demonstrate that Z-scores are a reasonable heuristic for it
 
 ### A. Assumptions and setup
 
-Consider this problem: **Team one has $N-1$ players randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool. Which final player should the first team choose to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week**?
+Consider this problem: **Team one has $N-1$ players randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool. Which final player should team one choose to optimize the expected value of categories won against team two, assuming all players perform at exactly their long term mean for a week?**
 
 This problem statement makes a few implicit simplifications about *Rotisserie* drafts 
 - The goal is to maximize the expected value of the number of categories won against an arbitrary opponent in a single week, where all players perform at their season-long means. Using weekly means instead of season-long totals is just a convenience, to align with the definition of Z-scores. And optimizing for victory against an arbitrary opponent is equivalent to optimizing for total score at the end of a season, since each category victory over any opponent is worth one point 
-- Besides the player being drafted, all others are assumed to be chosen randomly from a pool of top players. This assumption is obviously not exactly true. However, it is not completely crazy either, since all teams will have some strong and some weak players chosen from a variety of positions, making them random-ish in aggregate
+- Besides the player being drafted, all others are assumed to be chosen randomly from a pool of top players. This assumption is obviously not exactly true. However, it is somewhat necessary because we are trying to make a ranking system which does not depend on which other players have been drafted. It is also not as radical as it may seem, since real teams have a mix of strong and some weak players chosen from a variety of positions, making them random-ish in aggregate
 - Position requirements, waiver wires, injury slots, etc. are ignored. Drafters use their drafted players the whole season
 
-Based on these simplifications and the statistics of the player that team one is choosing, the objective can be calculated precisely
+The simplified problem can be approached by calculating the probability for team one to win each category, then optimizing for their sum
 
 ### B.	Category differences
 
@@ -107,9 +107,9 @@ It is clear that the expected number of category victories is directly proportio
 
 ## 3. Modifying assumptions for Head-to-Head
 
-Head-to-head also requires a simplified problem statement, which is:  **Team one has $N-1$ players randomly selected from a pool of players, and team two has $N$ players chosen randomly from the same pool. Which final player should team one choose to optimize the expected value of categories won against team two in a weekly matchup**? This is quite similar to the setup for *Rotisserie*, with one key difference: it is not assumed beforehand that players will perform at their season-term means, since head-to-head matchups are weekly and not aggregated actross an entire season. Weekly performances must be randomly sampled, in addition to players. 
+*Head-to-Head: Each Category* is deceptively similar to *Rotisserie*, in the sense that winning one category against one opponent is worth one point. The main difference between the two formats is that head-to-head matchups occur over a single week, rather than over an entire season. This is important because it means that players don't necessarily perform at their season-long averages for any given matchup. Instead, their performance for a matchup is somewhat random, depending on how they happen to perform that week. 
 
-Below, see how metrics for blocks change when sampled in this way
+For *Rotisserie*, we handled uncertainty about which other players would be chosen by assuming they were chosen randomly. Extending this for head-to-head, we need to assume we are not only choosing players randomly, but also their performances for a given week. Below, see how metrics for blocks change when sampled in this way
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
@@ -117,7 +117,7 @@ Although the mean remains the same, the standard deviation is larger because it 
 
 ## 4.	Formulating G-scores 
 
-The logic from section 2 can be repeated, except replacing $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$. For standard categories this yields scores of 
+Most of the logic from section 2 can also be applied to *Head-to-Head: Each Category*. The only difference is that we need to use metrics from the pool of players and performances, as laid out in section 3, rather than just players as we did in section 2. The mean is still $m_\mu$. Therefore all we need to do is replace $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$, which yields
 
 $$
 \frac{m_p – m_\mu}{\sqrt{m_\sigma^2 + m_\tau^2}} 
@@ -129,9 +129,9 @@ $$
 \frac{\frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{\sqrt{r_\sigma^2 + r_\tau^2}} 
 $$
 
-I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result. 
+I call these G-scores, and it turns out that these are quite different from Z-scores. For example, steals have a very high week-to-week standard deviation, and carry less weight in G-scores than Z-scores as a result.
 
-This matches with the way many fantasy players think about volatile categories like steals; they know that a technical advantage in them based on Z-scores is flimsy so they prioritize them less. The G-score idea just converts that intuition into a mathematical rigor
+Intuitively, why does this happen? The way I think about it is that investing heavily into a volatile category will lead to only a flimsy advantage, and so is less worthwhile than investing into a robust category. Many drafters have this intuition already, de-prioritizing unpredictable categories like steals relative to what Z-scores would suggest. The G-score idea just converts that intuition into a mathematical rigor
   
 ## 5.	Head-to-head simulation results
 
