@@ -7,7 +7,7 @@
 
 Fantasy basketball has a standard way of quantifying player value across categories, called 'Z-scoring', and it is used to make objective rankings of players. However, as far as I know, nobody has ever laid out exactly why Z-scores should work. They just seem intuitively sensible, so people use them.
 
-I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the "Rotisserie" format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect last month which is available [here](https://arxiv.org/abs/2307.02188).
+I looked into the math and did manage to derive a justification for Z-scores. However, the justification is only appropriate for the "Rotisserie" format. When the math is modified for head-to-head formats, a different metric that I call "G-score" pops out as the optimal way to rank players instead. I wrote a paper to that effect a few months ago which is available [here](https://arxiv.org/abs/2307.02188).
 
 I realize that the paper's explanation is incomprehensible to anyone without a background in math. To that end, I am providing a simplified version of the argument in this readme, which hopefully will be easier to follow
 
