@@ -69,7 +69,7 @@ You may notice that the result looks a lot like a Bell curve even though the raw
 
 The mean and standard deviation of the Bell curves for category differences can be calculated via probability theory. Including the unchosen player with category average $m_p$
 - The mean is $m_\mu - m_p$
-- The standard deviation is $\sqrt{23} * m_\sigma$ (The square root in the formula comes from the fact that $STD(X + Y) = \sqrt{STD(X)^2 + STD(Y)^2}$ where $STD(X)$ is the standard deviation of $X$)
+- The standard deviation is $\sqrt{2N-1} * m_\sigma$ (The square root in the formula comes from the fact that $STD(X + Y) = \sqrt{STD(X)^2 + STD(Y)^2}$ where $STD(X)$ is the standard deviation of $X$)
 
 ### D.	Calculating probability of victory
 
@@ -86,13 +86,13 @@ $$
 We already know $\mu$ and $\sigma$ for the standard statistics. Substituting them in yields
 
 $$
-CDF(0) = \frac{1}{2}\left[ 1 + \frac{2}{\sqrt{23 \pi}}* \frac{m_p – m_\mu}{m_\sigma} \right]
+CDF(0) = \frac{1}{2}\left[ 1 + \frac{2}{\sqrt{(2N-1) \pi}}* \frac{m_p – m_\mu}{m_\sigma} \right]
 $$
 
 And analagously for the percentage statistics 
 
 $$
-CDF(0) = \frac{1}{2} \left[ 1 + \frac{2}{\sqrt{23 \pi}} * \frac{ \frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{r_\sigma}\right]
+CDF(0) = \frac{1}{2} \left[ 1 + \frac{2}{\sqrt{(2N-1) \pi}} * \frac{ \frac{a_p}{a_\mu} \left( r_p – r_\mu \right) }{r_\sigma}\right]
 $$
 
 ### D. Implications for Z-scores
@@ -100,24 +100,24 @@ $$
 The last two equations included Z-scores. Adding up all the probabilities to get the expected number of categories won by team one, with $Z_{p,c}$ as player $p$'s Z-score for category $c$, the formula is
 
 $$
-\frac{1}{2}\left[9 + \frac{2}{\sqrt{23 \pi}} * \sum_c Z_{p,c} \right]
+\frac{1}{2}\left[9 + \frac{2}{\sqrt{(2N-1) \pi}} * \sum_c Z_{p,c} \right]
 $$
 
 It is clear that the expected number of category victories is directly proportional to the sum of the unchosen player's Z-scores. This tells us that under the aforementioned assumptions, the higher a player's total Z-score is, the better they are for Rotisserie
 
 ## 3. Modifying assumptions for Head-to-Head
 
-"Head-to-Head: Each Category" is deceptively similar to Rotisserie, in the sense that winning one category against one opponent is worth one point. Yes, head-to-head matchups are one at a time rather than simultaneous, but that doesn't matter when the goal is just to do as well as possible against every opponent. The main substantive difference between the two formats is that head-to-head matchups occur over a single week, rather than over an entire season. This is important because it means that players don't necessarily perform at their season-long averages for any given matchup. Instead, their performance for a matchup is somewhat random, depending on how they happen to perform that week. 
+"Head-to-Head: Each Category" is deceptively similar to Rotisserie, in the sense that winning one category against one opponent is worth one point. Yes, head-to-head matchups are one at a time rather than simultaneous, but that doesn't matter when the goal is just to do as well as possible against an arbitrary opponent. The main substantive difference between the two formats is that head-to-head matchups occur over a single week, rather than over an entire season. This is important because it means that players don't necessarily perform at their season-long averages for any given matchup. Instead, their performances are somewhat random, depending on how they happen to perform during the week of the matchup. 
 
-For Rotisserie, we handled uncertainty about which other players would be chosen by assuming they were chosen randomly. Extending this for head-to-head, we need to assume we are not only choosing players randomly, but also their performances for a given week. Below, see how metrics for blocks change when sampled in this way
+For Rotisserie, we handled uncertainty about which other players would be chosen by assuming they were chosen randomly. To extend this for head-to-head, we can assume that their performances are randomly chosen as well. Effectively, the revamped assumption is that we are randomly choosing player/weekly performance combos from a set of top players and their performances for a season, rather than just choosing a player and taking their average. Below, see how metrics for blocks change when we look at every weekly performance of the top $156$ players, instead of just their averages 
 
 https://github.com/zer2/Fantasy-Basketball--in-progress-/assets/17816840/ab41db2a-99f2-45b1-8c05-d755c014b30f
 
-Although the mean remains the same, the standard deviation is larger because it incorporates an additional term for week-to-week variation. Note that the new standard deviation is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
+Although the mean remains the same, the standard deviation gets larger. This makes sense, because week-to-week "noise" adds more volatility, which is reflected in the additional $m_\tau$ term. Note that the new standard deviation is $\sqrt{m_\sigma^2 + m_\tau^2}$ rather than $m_\sigma + m_\tau$ because of how standard deviation aggregates across multiple variables, as discussed in section 2B
 
 ## 4.	Formulating G-scores 
 
-Most of the logic from section 2 can also be applied to Head-to-Head: Each Category. The only difference is that we need to use metrics from the pool of players and performances, as laid out in section 3, rather than just players as we did in section 2. The mean is still $m_\mu$. Therefore all we need to do is replace $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$, which yields
+Most of the logic from section 2 can also be applied to Head-to-Head: Each Category. The only difference is that we need to use metrics from the pool of players and performances, as laid out in section 3, rather than just players as we did in section 2. The mean is still $m_\mu$ as shown in the example of blocks above. Therefore all we need to do is replace $m_\sigma$ with $\sqrt{m_\sigma^2 + m_\tau^2}$, which yields
 
 $$
 \frac{m_p – m_\mu}{\sqrt{m_\sigma^2 + m_\tau^2}} 
@@ -173,7 +173,7 @@ To confirm the intuition about why the G-score works, take a look at its win rat
 
 The G-score drafter performs well in stable/high-volume categories like assists and poorly in volatile categories like turnovers, netting to an average win rate of slightly above $50\\%$. As expected, the marginal investment in stable categories is worth more than the corresponding underinvestment in volatile categories, since investment in stable categories leads to reliable wins and the volatile categories can be won despite underinvestment with sheer luck. 
 
-Simulations also suggest that G-scores work better than Z-scores in the *Head-to-Head: Most Categories* format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it. 
+Simulations also suggest that G-scores work better than Z-scores in the *Head-to-Head: Most Categories* format. I chose not to include the results here because it is a very strategic format, and expecting other drafters to go straight off ranking lists is probably unrealistic for it.
 
 Another possible use-case is auctions. There is a well-known procedure for translating player value to auction value, outlined e.g. [in this article](https://www.rotowire.com/basketball/article/nba-auction-strategy-part-2-21393). If the auction is for a head-to-head format, it is reasonable to use G-scores to quantify value rather than Z-scores 
 
