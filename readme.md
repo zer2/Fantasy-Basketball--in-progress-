@@ -139,7 +139,7 @@ Our logic relies on many assumptions, so we can't be sure that G-scores work in 
 
 The code in this repository simulates a simplistic version of head-to-head fantasy basketball, via a $12$ team snake draft. It doesn't include advanced strategies like using the waiver wire or punting categories, but for the most part it should be similar to real fantasy. For more detail, check out the code or the paper. 
 
-The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Actual results are shown below for *Head-to-Head: Each Category* 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
+The expected win rate if all strategies are equally good is $\frac{1}{12} = 8.33\\%$. Empirical win rates are shown below for *Head-to-Head: Each Category* 9-Cat, which includes all categories, and 8-Cat, a variant which excludes turnovers 
 
 |     | G-score vs 11 Z-score | Z-score vs. 11 G-score|
 | -------- | ------- |------- |
